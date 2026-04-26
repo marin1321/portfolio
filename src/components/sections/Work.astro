@@ -11,7 +11,7 @@ const en = getStrings("en").work;
 const es = getStrings("es").work;
 ---
 
-<section id="work" class="section">
+<section id="work" class="section" aria-labelledby="work-heading">
   <div class="container-page">
     <header data-reveal class="max-w-3xl">
       <Localized
@@ -22,6 +22,7 @@ const es = getStrings("es").work;
       />
       <Localized
         as="h2"
+        id="work-heading"
         class="section-heading"
         en={en.heading}
         es={es.heading}

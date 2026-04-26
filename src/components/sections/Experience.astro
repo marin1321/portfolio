@@ -11,7 +11,11 @@ const en = getStrings("en").experience;
 const es = getStrings("es").experience;
 ---
 
-<section id="experience" class="section bg-[var(--color-bg-soft)]">
+<section
+  id="experience"
+  class="section bg-[var(--color-bg-soft)]"
+  aria-labelledby="experience-heading"
+>
   <div class="container-page grid gap-12 lg:grid-cols-12">
     <header data-reveal class="lg:col-span-4">
       <Localized
@@ -22,6 +26,7 @@ const es = getStrings("es").experience;
       />
       <Localized
         as="h2"
+        id="experience-heading"
         class="section-heading"
         en={en.heading}
         es={es.heading}

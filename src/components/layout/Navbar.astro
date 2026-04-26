@@ -60,11 +60,15 @@ const links = [
       <button
         type="button"
         data-menu-toggle
+        data-label-open-en={en.menuOpen}
+        data-label-open-es={es.menuOpen}
+        data-label-close-en={en.menuClose}
+        data-label-close-es={es.menuClose}
         aria-expanded="false"
         aria-controls="mobile-menu"
+        aria-label={en.menuOpen}
         class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-fg)] md:hidden"
       >
-        <Localized class="sr-only" en={en.menuOpen} es={es.menuOpen} />
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -141,9 +145,24 @@ const links = [
   window.addEventListener("scroll", setScrolled, { passive: true });
 
   if (toggle && panel) {
+    const labelFor = (open: boolean) => {
+      const lang = (document.documentElement.dataset.lang ?? "en") as
+        | "en"
+        | "es";
+      const key = open
+        ? lang === "es"
+          ? "labelCloseEs"
+          : "labelCloseEn"
+        : lang === "es"
+          ? "labelOpenEs"
+          : "labelOpenEn";
+      return toggle.dataset[key] ?? "";
+    };
+
     const setOpen = (open: boolean) => {
       panel.classList.toggle("hidden", !open);
       toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", labelFor(open));
       toggle.querySelectorAll<HTMLElement>("[data-menu-icon]").forEach((el) => {
         el.dataset.open =
           (el.dataset.menuIcon === "open") === open ? "true" : "false";
@@ -153,6 +172,11 @@ const links = [
     toggle.addEventListener("click", () => {
       const open = panel.classList.contains("hidden");
       setOpen(open);
+    });
+
+    document.addEventListener("lang:change", () => {
+      const open = !panel.classList.contains("hidden");
+      toggle.setAttribute("aria-label", labelFor(open));
     });
 
     panel.querySelectorAll<HTMLAnchorElement>("[data-menu-link]").forEach(
@@ -171,7 +195,13 @@ const links = [
 
   const setActive = (id: string) => {
     navLinks.forEach((link) => {
-      link.dataset.active = link.dataset.navLink === id ? "true" : "false";
+      const isActive = link.dataset.navLink === id;
+      link.dataset.active = isActive ? "true" : "false";
+      if (isActive) {
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
+      }
     });
   };
 
