@@ -1,0 +1,121 @@
+---
+/**
+ * ProjectFilter — accessible toggle group that filters ProjectCards
+ * by `type` (production / client). The "All" tab shows every card.
+ *
+ * Why role="group" + aria-pressed (not role="tablist"):
+ *  - tablist is meant for switching one of several panels in/out.
+ *    Here every variant maps to the same panel, which we mutate.
+ *  - role="group" with aria-pressed toggle buttons is the canonical
+ *    "filter chips" pattern: native Tab moves between buttons, no
+ *    custom arrow-key handling required, and screen readers announce
+ *    the pressed state on each focus.
+ *
+ * Animation: cards leaving the result set are removed from the grid
+ * (`display: none` via [data-hidden="true"]). Cards entering the set
+ * get a one-shot `is-entering` class that triggers a fade-up keyframe.
+ * Honors prefers-reduced-motion via a global CSS rule.
+ */
+import { getStrings } from "@data/i18n";
+import { projects } from "@data/projects";
+import Localized from "./Localized.astro";
+
+const en = getStrings("en").work.filters;
+const es = getStrings("es").work.filters;
+
+const filters = [
+  { id: "all", en: en.all, es: es.all },
+  { id: "production", en: en.production, es: es.production },
+  { id: "client", en: en.client, es: es.client },
+] as const;
+
+/* Pre-compute the default count so the aria-live region ships with
+ * the correct value at first paint and never announces a transient
+ * "0 shown" before the inline script promotes it. */
+const initialCount = projects.length;
+---
+
+<div
+  data-project-filter
+  role="group"
+  aria-labelledby="project-filter-label"
+  class="mt-10 flex flex-wrap items-center gap-2"
+>
+  <Localized
+    id="project-filter-label"
+    class="sr-only"
+    en={en.label}
+    es={es.label}
+  />
+
+  {
+    filters.map((f, i) => (
+      <button
+        type="button"
+        data-filter={f.id}
+        aria-pressed={i === 0 ? "true" : "false"}
+        aria-controls="work-grid"
+        class="filter-tab"
+      >
+        <Localized en={f.en} es={f.es} />
+      </button>
+    ))
+  }
+
+  <p
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    class="ml-auto text-xs text-[var(--color-fg-muted)]"
+  >
+    <span data-filter-count>{initialCount}</span>
+    {" "}
+    <Localized en={en.countSuffix} es={es.countSuffix} />
+  </p>
+</div>
+
+<script>
+  const filter = document.querySelector<HTMLElement>("[data-project-filter]");
+  const grid = document.getElementById("work-grid");
+  if (filter && grid) {
+    const buttons = filter.querySelectorAll<HTMLButtonElement>("[data-filter]");
+    const cards = grid.querySelectorAll<HTMLElement>("[data-project-type]");
+    const countEl = filter.querySelector<HTMLElement>("[data-filter-count]");
+
+    const apply = (filterId: string) => {
+      let count = 0;
+      cards.forEach((card) => {
+        const wasHidden = card.dataset.hidden === "true";
+        const matches =
+          filterId === "all" || card.dataset.projectType === filterId;
+        if (matches) {
+          if (wasHidden) {
+            /* Remove + re-add the class on the next paint to retrigger
+               the keyframe animation when a card returns from hidden. */
+            card.classList.remove("is-entering");
+            void card.offsetWidth;
+            card.classList.add("is-entering");
+          }
+          card.dataset.hidden = "false";
+          count++;
+        } else {
+          card.dataset.hidden = "true";
+          card.classList.remove("is-entering");
+        }
+      });
+      if (countEl) countEl.textContent = String(count);
+    };
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.filter ?? "all";
+        buttons.forEach((b) =>
+          b.setAttribute("aria-pressed", String(b === btn)),
+        );
+        apply(id);
+      });
+    });
+
+    apply("all");
+  }
+</script>

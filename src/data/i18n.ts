@@ -64,6 +64,14 @@ export interface WorkStrings {
   badgeClient: string;
   highlightLabel: string;
   companyLabel: string;
+  /** Labels for the project filter tabs and its accessible name. */
+  filters: {
+    label: string;
+    all: string;
+    production: string;
+    client: string;
+    countSuffix: string;
+  };
 }
 
 export interface ExperienceStrings {
@@ -164,6 +172,13 @@ const en: UIStrings = {
     badgeClient: "Client work",
     highlightLabel: "Highlight",
     companyLabel: "Company",
+    filters: {
+      label: "Filter projects",
+      all: "All",
+      production: "Production",
+      client: "Client work",
+      countSuffix: "shown",
+    },
   },
   experience: {
     eyebrow: "Experience",
@@ -246,6 +261,13 @@ const es: UIStrings = {
     badgeClient: "Cliente",
     highlightLabel: "Highlight",
     companyLabel: "Empresa",
+    filters: {
+      label: "Filtrar proyectos",
+      all: "Todos",
+      production: "Producción",
+      client: "Cliente",
+      countSuffix: "visibles",
+    },
   },
   experience: {
     eyebrow: "Experiencia",

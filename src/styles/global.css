@@ -114,6 +114,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:focus-visible,
   [data-lang-toggle]:focus-visible,
+  .filter-tab:focus-visible,
   .tag:focus-visible {
     outline-offset: 3px;
     border-radius: 9999px;
@@ -176,6 +177,17 @@
   a:hover > .icon-shift,
   button:hover > .icon-shift {
     transform: translateX(2px);
+  }
+
+  /* Filter tabs — toggle button group above the project grid.
+     `aria-pressed="true"` flips the chip into the inverted style. */
+  .filter-tab {
+    @apply inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-1.5 text-xs font-medium text-[var(--color-fg-soft)] transition-colors duration-200 ease-[var(--ease-out-soft)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-fg)];
+  }
+  .filter-tab[aria-pressed="true"] {
+    background-color: var(--color-fg);
+    border-color: var(--color-fg);
+    color: var(--color-bg);
   }
 }
 
@@ -266,5 +278,34 @@ html[data-lang="es"] [data-l="en"] {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* ============================================================
+   Project filter — hidden cards collapse out of the grid; cards
+   that re-enter the result set fade up via the keyframe below.
+   ============================================================ */
+[data-project-type][data-hidden="true"] {
+  display: none;
+}
+
+@keyframes filter-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+[data-project-type].is-entering {
+  animation: filter-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-project-type].is-entering {
+    animation: none;
   }
 }
