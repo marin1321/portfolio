@@ -121,8 +121,11 @@ const structuredData = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
+    <!-- Single theme-color tag, kept in sync with the active theme by
+         the boot + toggle scripts. The initial value matches the
+         light surface; if the boot script promotes to dark, it
+         rewrites this tag before the first paint. -->
+    <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light dark" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -217,6 +220,33 @@ const structuredData = {
       type="application/ld+json"
       set:html={JSON.stringify(structuredData)}
     />
+
+    <!-- Early theme: applies the persisted theme (or the system
+         preference if none is stored) before the first paint to
+         avoid a flash of the wrong palette. Also rewrites the
+         <meta name="theme-color"> tag so the mobile browser chrome
+         opens in the correct color. -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+          if (theme === "dark") {
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute("content", "#09090b");
+          }
+        } catch (_) {
+          /* localStorage / matchMedia unavailable — fall back to
+             the SSR light default. */
+        }
+      })();
+    </script>
 
     <!-- Early language: applies the persisted language before the first
          paint to avoid a flash when toggling EN/ES. -->

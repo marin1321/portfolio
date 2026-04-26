@@ -145,6 +145,12 @@ html[data-theme="dark"] {
     font-family: var(--font-sans);
     font-weight: 400;
     line-height: 1.55;
+    /* Smooth the dominant surface change when the theme flips so the
+       transition feels considered, not abrupt. Borders, cards, etc.
+       snap immediately — the body fade carries the visual signal. */
+    transition:
+      background-color var(--dur-base) var(--ease-out-soft),
+      color var(--dur-base) var(--ease-out-soft);
   }
 
   ::selection {
@@ -166,6 +172,7 @@ html[data-theme="dark"] {
   .btn-primary:focus-visible,
   .btn-secondary:focus-visible,
   [data-lang-toggle]:focus-visible,
+  [data-theme-toggle]:focus-visible,
   .filter-tab:focus-visible,
   .tag:focus-visible {
     outline-offset: 3px;
@@ -331,6 +338,21 @@ html[data-lang="es"] [data-l="en"] {
     transform: none;
     transition: none;
   }
+}
+
+/* ============================================================
+   Theme toggle icon visibility — show the icon that represents
+   the *current* theme. The button's aria-label describes the
+   destination state, so this is just the visual mirror.
+   ============================================================ */
+[data-theme-toggle] .theme-icon-moon {
+  display: none;
+}
+html[data-theme="dark"] [data-theme-toggle] .theme-icon-sun {
+  display: none;
+}
+html[data-theme="dark"] [data-theme-toggle] .theme-icon-moon {
+  display: inline-block;
 }
 
 /* ============================================================
