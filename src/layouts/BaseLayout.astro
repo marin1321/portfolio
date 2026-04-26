@@ -178,18 +178,26 @@ const structuredData = {
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={strings.meta.ogTitle} />
 
-    <!-- Fonts: Geist (display=swap, avoids CLS) -->
+    <!-- Fonts: Geist (display=swap avoids CLS).
+         Strategy: warm the connection with preconnect, then load the
+         stylesheet without blocking render via the rel=preload swap
+         trick — the <noscript> fallback keeps it functional when JS
+         is disabled. The previous setup duplicated the request as
+         both preload and stylesheet; this version loads it once. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="preload"
       as="style"
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
-    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      />
+    </noscript>
 
     <!-- JSON-LD structured data: Person + WebSite under @graph. -->
     <script
