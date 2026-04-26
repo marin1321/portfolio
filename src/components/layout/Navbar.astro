@@ -44,7 +44,8 @@ const links = [
           <li>
             <a
               href={link.href}
-              class="text-sm text-[var(--color-fg-soft)] transition-colors hover:text-[var(--color-fg)]"
+              data-nav-link={link.href.replace("#", "")}
+              class="nav-link text-sm text-[var(--color-fg-soft)] hover:text-[var(--color-fg)]"
             >
               <Localized en={link.en} es={link.es} />
             </a>
@@ -157,5 +158,39 @@ const links = [
     panel.querySelectorAll<HTMLAnchorElement>("[data-menu-link]").forEach(
       (link) => link.addEventListener("click", () => setOpen(false)),
     );
+  }
+
+  /* Active section indicator — flips data-active on the matching
+     nav link as sections cross the viewport center. */
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>(
+    "[data-nav-link]",
+  );
+  const sections = Array.from(navLinks)
+    .map((link) => document.getElementById(link.dataset.navLink ?? ""))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const setActive = (id: string) => {
+    navLinks.forEach((link) => {
+      link.dataset.active = link.dataset.navLink === id ? "true" : "false";
+    });
+  };
+
+  if ("IntersectionObserver" in window && sections.length > 0) {
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) =>
+              (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0),
+          )[0];
+        if (visible?.target.id) setActive(visible.target.id);
+      },
+      {
+        rootMargin: "-40% 0px -55% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      },
+    );
+    sections.forEach((section) => sectionObserver.observe(section));
   }
 </script>
