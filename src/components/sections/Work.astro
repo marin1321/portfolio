@@ -6,6 +6,7 @@ import { getStrings } from "@data/i18n";
 import { projects } from "@data/projects";
 import Localized from "@components/ui/Localized.astro";
 import ProjectCard from "@components/ui/ProjectCard.astro";
+import ProjectFilter from "@components/ui/ProjectFilter.astro";
 
 const en = getStrings("en").work;
 const es = getStrings("es").work;
@@ -35,7 +36,9 @@ const es = getStrings("es").work;
       />
     </header>
 
-    <div class="mt-14 grid gap-6 lg:grid-cols-2">
+    <ProjectFilter />
+
+    <div id="work-grid" class="mt-8 grid gap-6 lg:grid-cols-2">
       {projects.map((project) => <ProjectCard project={project} />)}
     </div>
   </div>
