@@ -3,6 +3,11 @@
 /* ============================================================
    Design tokens — minimalist palette (white / gray scale with a
    subtle accent). Typography uses two weights only: 400 and 500.
+
+   Dark mode is implemented as a token override on
+   `html[data-theme="dark"]` (see block below). Components reference
+   the variables directly, so flipping a single attribute on <html>
+   re-themes the whole UI without re-rendering anything.
    ============================================================ */
 @theme {
   /* Neutral palette — gray scale with a subtle accent */
@@ -20,6 +25,12 @@
   --color-accent: #18181b;
   --color-accent-soft: #27272a;
   --color-accent-fg: #fafafa;
+
+  /* `theme-color` for the browser chrome (mobile address bar etc.).
+     The inline boot script keeps this in sync with the active theme
+     when the user toggles, so the meta tag here just seeds the
+     initial value at SSR time. */
+  --color-browser-chrome: #ffffff;
 
   /* Typography — Geist (two weights) */
   --font-sans:
@@ -76,6 +87,43 @@
 }
 
 /* ============================================================
+   Dark theme — token overrides for `html[data-theme="dark"]`.
+
+   Palette derived from the same Zinc scale as light mode, mirrored
+   around the lightness axis. `--color-fg-subtle` is intentionally
+   darker than its light-mode counterpart (zinc-600 vs zinc-400):
+   on a near-black background the "subtle foreground" needs to fade
+   *down* into the surface, not glow up off it.
+
+   Shadows are dialed up in opacity so cards remain visible against
+   the deep background; the values stay subtle to keep the
+   editorial feel.
+   ============================================================ */
+html[data-theme="dark"] {
+  --color-bg: #09090b;
+  --color-bg-soft: #131316;
+  --color-bg-muted: #1c1c20;
+  --color-border: #27272a;
+  --color-border-soft: #1f1f22;
+
+  --color-fg: #fafafa;
+  --color-fg-soft: #d4d4d8;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #52525b;
+
+  --color-accent: #fafafa;
+  --color-accent-soft: #e4e4e7;
+  --color-accent-fg: #18181b;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.55);
+
+  --color-browser-chrome: #09090b;
+
+  color-scheme: dark;
+}
+
+/* ============================================================
    Base styles
    ============================================================ */
 @layer base {
@@ -85,6 +133,10 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    /* Tells the UA the page is light by default so native widgets
+       (scrollbars, form controls, autofill) match. The dark-theme
+       block above overrides this to `dark` when the user opts in. */
+    color-scheme: light;
   }
 
   body {
@@ -93,6 +145,12 @@
     font-family: var(--font-sans);
     font-weight: 400;
     line-height: 1.55;
+    /* Smooth the dominant surface change when the theme flips so the
+       transition feels considered, not abrupt. Borders, cards, etc.
+       snap immediately — the body fade carries the visual signal. */
+    transition:
+      background-color var(--dur-base) var(--ease-out-soft),
+      color var(--dur-base) var(--ease-out-soft);
   }
 
   ::selection {
@@ -114,6 +172,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:focus-visible,
   [data-lang-toggle]:focus-visible,
+  [data-theme-toggle]:focus-visible,
   .filter-tab:focus-visible,
   .tag:focus-visible {
     outline-offset: 3px;
@@ -279,6 +338,21 @@ html[data-lang="es"] [data-l="en"] {
     transform: none;
     transition: none;
   }
+}
+
+/* ============================================================
+   Theme toggle icon visibility — show the icon that represents
+   the *current* theme. The button's aria-label describes the
+   destination state, so this is just the visual mirror.
+   ============================================================ */
+[data-theme-toggle] .theme-icon-moon {
+  display: none;
+}
+html[data-theme="dark"] [data-theme-toggle] .theme-icon-sun {
+  display: none;
+}
+html[data-theme="dark"] [data-theme-toggle] .theme-icon-moon {
+  display: inline-block;
 }
 
 /* ============================================================

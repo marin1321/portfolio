@@ -1,0 +1,174 @@
+---
+/**
+ * ThemeToggle — sun/moon button that flips the active color scheme.
+ *
+ * Behaviour:
+ *  - First load: respects `prefers-color-scheme` if no explicit
+ *    choice has been stored (decided by the BaseLayout boot script,
+ *    which runs before the first paint to avoid a theme flash).
+ *  - Click: explicitly sets `light` or `dark`, persists in
+ *    localStorage, and dispatches a `theme:change` CustomEvent so
+ *    other listeners can react.
+ *  - Icons follow the "show current state" convention used by
+ *    Tailwind / Vercel / GitHub: a sun glyph means "we're in light
+ *    mode right now"; a moon glyph means "we're in dark mode now".
+ *  - The accessible name is dynamic and describes the *destination*
+ *    (e.g. "Switch to dark theme") so screen readers announce the
+ *    consequence of activation, not the current state.
+ */
+import { getStrings } from "@data/i18n";
+import type { Lang } from "@data/i18n";
+
+interface Props {
+  /** Initial language used to seed the SSR aria-label. The script
+   *  re-syncs the label when the user toggles language. */
+  lang?: Lang;
+  class?: string;
+}
+
+const { lang = "en", class: className } = Astro.props;
+const labels = {
+  en: {
+    toLight: getStrings("en").nav.themeToggleToLight,
+    toDark: getStrings("en").nav.themeToggleToDark,
+  },
+  es: {
+    toLight: getStrings("es").nav.themeToggleToLight,
+    toDark: getStrings("es").nav.themeToggleToDark,
+  },
+};
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  data-label-to-light-en={labels.en.toLight}
+  data-label-to-light-es={labels.es.toLight}
+  data-label-to-dark-en={labels.en.toDark}
+  data-label-to-dark-es={labels.es.toDark}
+  aria-label={labels[lang].toDark}
+  class:list={[
+    "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-fg-soft)] transition-colors duration-200 ease-[var(--ease-out-soft)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-fg)]",
+    className,
+  ]}
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="theme-icon-sun h-4 w-4"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+    ></path>
+  </svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="theme-icon-moon h-4 w-4"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+  </svg>
+</button>
+
+<script>
+  type Theme = "light" | "dark";
+
+  const labelFor = (btn: HTMLButtonElement, next: Theme) => {
+    const lang = (document.documentElement.dataset.lang ?? "en") as
+      | "en"
+      | "es";
+    const key =
+      next === "light"
+        ? lang === "es"
+          ? "labelToLightEs"
+          : "labelToLightEn"
+        : lang === "es"
+          ? "labelToDarkEs"
+          : "labelToDarkEn";
+    return btn.dataset[key] ?? "";
+  };
+
+  const setTheme = (next: Theme) => {
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("theme", next);
+    } catch {
+      /* localStorage unavailable */
+    }
+    /* Keep <meta name=theme-color> in sync with the active surface so
+       the mobile address bar matches the page chrome. */
+    const meta = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    );
+    if (meta) {
+      meta.content =
+        next === "dark"
+          ? getComputedStyle(document.documentElement)
+              .getPropertyValue("--color-browser-chrome")
+              .trim() || "#09090b"
+          : "#ffffff";
+    }
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")
+      .forEach((btn) => {
+        const target: Theme = next === "dark" ? "light" : "dark";
+        btn.setAttribute("aria-label", labelFor(btn, target));
+      });
+    document.dispatchEvent(new CustomEvent("theme:change", { detail: next }));
+  };
+
+  const initToggles = () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-theme-toggle]",
+    );
+    /* Ensure the SSR-baked aria-label matches the live theme — the
+       boot script may have flipped to dark before this script ran. */
+    const current =
+      (document.documentElement.dataset.theme as Theme | undefined) ?? "light";
+    const initialTarget: Theme = current === "dark" ? "light" : "dark";
+    buttons.forEach((btn) =>
+      btn.setAttribute("aria-label", labelFor(btn, initialTarget)),
+    );
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const now = (document.documentElement.dataset.theme ?? "light") as
+          | "light"
+          | "dark";
+        setTheme(now === "dark" ? "light" : "dark");
+      });
+    });
+
+    /* Refresh aria-labels when the user changes language. */
+    document.addEventListener("lang:change", () => {
+      const now = (document.documentElement.dataset.theme ?? "light") as
+        | "light"
+        | "dark";
+      const target: Theme = now === "dark" ? "light" : "dark";
+      buttons.forEach((btn) =>
+        btn.setAttribute("aria-label", labelFor(btn, target)),
+      );
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initToggles);
+  } else {
+    initToggles();
+  }
+</script>

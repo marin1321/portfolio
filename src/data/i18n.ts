@@ -19,6 +19,10 @@ export interface NavStrings {
   langToggleLabel: string;
   menuOpen: string;
   menuClose: string;
+  /** Accessible labels for the theme toggle. `toLight` / `toDark`
+   *  describe the *destination* state, mirroring `langToggleLabel`. */
+  themeToggleToLight: string;
+  themeToggleToDark: string;
 }
 
 export interface HeroStat {
@@ -131,6 +135,8 @@ const en: UIStrings = {
     langToggleLabel: "Switch language",
     menuOpen: "Open menu",
     menuClose: "Close menu",
+    themeToggleToLight: "Switch to light theme",
+    themeToggleToDark: "Switch to dark theme",
   },
   hero: {
     availability: "Available for new opportunities",
@@ -220,6 +226,8 @@ const es: UIStrings = {
     langToggleLabel: "Cambiar idioma",
     menuOpen: "Abrir menú",
     menuClose: "Cerrar menú",
+    themeToggleToLight: "Cambiar a tema claro",
+    themeToggleToDark: "Cambiar a tema oscuro",
   },
   hero: {
     availability: "Disponible para nuevas oportunidades",
