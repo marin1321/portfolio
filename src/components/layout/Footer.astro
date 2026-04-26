@@ -1,0 +1,54 @@
+---
+/**
+ * Footer — copyright + social links + tech credit.
+ */
+import { formatCopyright, getStrings, personal } from "@data/i18n";
+import Localized from "@components/ui/Localized.astro";
+
+const en = getStrings("en").footer;
+const es = getStrings("es").footer;
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-[var(--color-border-soft)] bg-[var(--color-bg)]">
+  <div
+    class="container-page flex flex-col items-start justify-between gap-6 py-10 sm:flex-row sm:items-center"
+  >
+    <p class="text-sm text-[var(--color-fg-muted)]">{formatCopyright(year)}</p>
+
+    <ul class="flex flex-wrap items-center gap-5 text-sm">
+      <li>
+        <a
+          href={`mailto:${personal.email}`}
+          class="text-[var(--color-fg-soft)] transition-colors hover:text-[var(--color-fg)]"
+          >Email</a
+        >
+      </li>
+      <li>
+        <a
+          href={personal.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--color-fg-soft)] transition-colors hover:text-[var(--color-fg)]"
+          >LinkedIn</a
+        >
+      </li>
+      <li>
+        <a
+          href={personal.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--color-fg-soft)] transition-colors hover:text-[var(--color-fg)]"
+          >GitHub</a
+        >
+      </li>
+    </ul>
+
+    <Localized
+      as="p"
+      class="text-xs text-[var(--color-fg-muted)]"
+      en={en.builtWith}
+      es={es.builtWith}
+    />
+  </div>
+</footer>

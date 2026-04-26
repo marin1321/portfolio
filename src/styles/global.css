@@ -1,0 +1,176 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — minimalist palette (white / gray scale with a
+   subtle accent). Typography uses two weights only: 400 and 500.
+   ============================================================ */
+@theme {
+  /* Neutral palette — gray scale with a subtle accent */
+  --color-bg: #ffffff;
+  --color-bg-soft: #fafafa;
+  --color-bg-muted: #f4f4f5;
+  --color-border: #e4e4e7;
+  --color-border-soft: #ededef;
+
+  --color-fg: #18181b;
+  --color-fg-soft: #3f3f46;
+  --color-fg-muted: #71717a;
+  --color-fg-subtle: #a1a1aa;
+
+  --color-accent: #18181b;
+  --color-accent-soft: #27272a;
+  --color-accent-fg: #fafafa;
+
+  /* Typography — Geist (two weights) */
+  --font-sans:
+    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* Container */
+  --container-2xl: 1200px;
+
+  /* Radius */
+  --radius-card: 0.875rem;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.06);
+
+  /* Animations */
+  --animate-fade-in: fade-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-up: fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* ============================================================
+   Base styles
+   ============================================================ */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  ::selection {
+    background-color: var(--color-fg);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Globally honor prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================
+   Reusable utility components
+   ============================================================ */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1200px] px-6 sm:px-8 lg:px-10;
+  }
+
+  .section {
+    @apply scroll-mt-24 py-24 sm:py-28 lg:py-32;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.18em] text-[var(--color-fg-muted)];
+  }
+
+  .section-heading {
+    @apply mt-3 text-3xl font-medium tracking-tight text-[var(--color-fg)] sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-sm font-medium text-[var(--color-accent-fg)] transition-colors duration-200 hover:bg-[var(--color-accent-soft)];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-border)] bg-transparent px-5 py-2.5 text-sm font-medium text-[var(--color-fg)] transition-colors duration-200 hover:bg-[var(--color-bg-muted)];
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-2.5 py-1 text-xs font-medium text-[var(--color-fg-soft)];
+  }
+}
+
+/* ============================================================
+   i18n — both languages are rendered and the inactive one is hidden.
+   The inline script in BaseLayout.astro sets html[data-lang] before
+   the first paint to avoid a flash of the wrong language.
+   ============================================================ */
+html[data-lang="en"] [data-l="es"],
+html[data-lang="es"] [data-l="en"] {
+  display: none !important;
+}
+
+/* ============================================================
+   Scroll-triggered animations (activated via IntersectionObserver)
+   ============================================================ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

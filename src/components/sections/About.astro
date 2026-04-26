@@ -1,0 +1,118 @@
+---
+/**
+ * About — bio + stack grouped by category + education.
+ */
+import {
+  getStrings,
+  stackByCategory,
+  stackCategories,
+} from "@data/i18n";
+import Localized from "@components/ui/Localized.astro";
+import SkillTag from "@components/ui/SkillTag.astro";
+
+const en = getStrings("en").about;
+const es = getStrings("es").about;
+const catEn = stackCategories.en;
+const catEs = stackCategories.es;
+
+const categories = (
+  Object.keys(stackByCategory) as Array<keyof typeof stackByCategory>
+).map((key) => ({
+  key,
+  en: catEn[key],
+  es: catEs[key],
+  items: stackByCategory[key],
+}));
+---
+
+<section id="about" class="section bg-[var(--color-bg-soft)]">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <header data-reveal class="lg:col-span-4">
+      <Localized
+        as="p"
+        class="section-eyebrow"
+        en={en.eyebrow}
+        es={es.eyebrow}
+      />
+      <Localized
+        as="h2"
+        class="section-heading"
+        en={en.heading}
+        es={es.heading}
+      />
+    </header>
+
+    <div class="flex flex-col gap-12 lg:col-span-8">
+      <Localized
+        as="p"
+        data-reveal
+        class="max-w-3xl text-base leading-relaxed text-[var(--color-fg-soft)] sm:text-lg"
+        en={en.bio}
+        es={es.bio}
+      />
+
+      <div data-reveal>
+        <Localized
+          as="h3"
+          class="text-xs font-medium uppercase tracking-[0.18em] text-[var(--color-fg-muted)]"
+          en={en.stackHeading}
+          es={es.stackHeading}
+        />
+        <dl class="mt-6 grid gap-x-10 gap-y-7 sm:grid-cols-2">
+          {
+            categories.map((cat) => (
+              <div>
+                <dt class="mb-3 text-sm font-medium text-[var(--color-fg)]">
+                  <Localized en={cat.en} es={cat.es} />
+                </dt>
+                <dd class="flex flex-wrap gap-2">
+                  {cat.items.map((item) => (
+                    <SkillTag label={item} />
+                  ))}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div data-reveal>
+        <Localized
+          as="h3"
+          class="text-xs font-medium uppercase tracking-[0.18em] text-[var(--color-fg-muted)]"
+          en={en.educationHeading}
+          es={es.educationHeading}
+        />
+        <ul class="mt-5 grid gap-4 sm:grid-cols-2">
+          {
+            [
+              { en: en.educationCurrent, es: es.educationCurrent },
+              { en: en.educationPrevious, es: es.educationPrevious },
+            ].map((edu) => (
+              <li class="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-5">
+                <Localized
+                  as="p"
+                  class="text-sm font-medium text-[var(--color-fg)]"
+                  en={edu.en.institution}
+                  es={edu.es.institution}
+                />
+                <Localized
+                  as="p"
+                  class="mt-1 text-sm text-[var(--color-fg-soft)]"
+                  en={edu.en.degree}
+                  es={edu.es.degree}
+                />
+                <Localized
+                  as="p"
+                  class="mt-2 text-xs text-[var(--color-fg-muted)]"
+                  en={edu.en.period}
+                  es={edu.es.period}
+                />
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

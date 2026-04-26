@@ -1,0 +1,15 @@
+---
+/**
+ * SkillTag — minimal chip used for technology names.
+ * Same text in EN/ES (technology names are not localized).
+ */
+
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<span class:list={["tag", className]}>{label}</span>

@@ -1,0 +1,140 @@
+---
+/**
+ * Hero — above-the-fold portfolio entry point.
+ *
+ * - Availability tag
+ * - Large headline using two type weights
+ * - CTAs (View work + Download CV with a language-aware href)
+ * - Stats row (4+ years, 3 companies, 6 platforms)
+ *
+ * Animation: staggered fade-up — headline → subtitle → CTAs → stats.
+ */
+import { getStrings } from "@data/i18n";
+import Localized from "@components/ui/Localized.astro";
+
+const en = getStrings("en").hero;
+const es = getStrings("es").hero;
+---
+
+<section
+  id="hero"
+  class="section relative pt-36 sm:pt-40 lg:pt-44"
+  aria-labelledby="hero-heading"
+>
+  <div class="container-page">
+    <div class="flex flex-col items-start gap-8 lg:gap-10">
+      <div
+        class="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-1.5 text-xs font-medium text-[var(--color-fg-soft)] [animation:var(--animate-fade-in)]"
+      >
+        <span
+          class="relative inline-flex h-2 w-2"
+          aria-hidden="true"
+        >
+          <span
+            class="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75"
+          ></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"
+          ></span>
+        </span>
+        <Localized en={en.availability} es={es.availability} />
+      </div>
+
+      <Localized
+        as="h1"
+        id="hero-heading"
+        class="max-w-4xl text-4xl font-medium tracking-tight text-[var(--color-fg)] sm:text-5xl lg:text-[3.75rem] lg:leading-[1.05] [animation:var(--animate-fade-up)] [animation-delay:80ms]"
+        en={en.headline}
+        es={es.headline}
+      />
+
+      <Localized
+        as="p"
+        class="max-w-2xl text-base leading-relaxed text-[var(--color-fg-soft)] sm:text-lg [animation:var(--animate-fade-up)] [animation-delay:160ms]"
+        en={en.subtitle}
+        es={es.subtitle}
+      />
+
+      <div
+        class="flex flex-wrap items-center gap-3 [animation:var(--animate-fade-up)] [animation-delay:240ms]"
+      >
+        <a href="#work" class="btn-primary">
+          <Localized en={en.ctaPrimary} es={es.ctaPrimary} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-4 w-4"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M5 12h14M13 5l7 7-7 7"></path>
+          </svg>
+        </a>
+
+        <a
+          href={en.cvFile}
+          data-cv-link
+          data-cv-en={en.cvFile}
+          data-cv-es={es.cvFile}
+          download
+          class="btn-secondary"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-4 w-4"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"></path>
+          </svg>
+          <Localized en={en.ctaSecondary} es={es.ctaSecondary} />
+        </a>
+      </div>
+
+      <dl
+        class="mt-4 grid w-full max-w-2xl grid-cols-1 gap-6 border-t border-[var(--color-border-soft)] pt-8 sm:grid-cols-3 [animation:var(--animate-fade-up)] [animation-delay:320ms]"
+      >
+        {
+          en.stats.map((stat, i) => (
+            <div>
+              <dt class="text-3xl font-medium tracking-tight text-[var(--color-fg)]">
+                {stat.number}
+              </dt>
+              <dd class="mt-1 text-sm text-[var(--color-fg-muted)]">
+                <Localized en={stat.label} es={es.stats[i]?.label ?? stat.label} />
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<script>
+  const link = document.querySelector<HTMLAnchorElement>("[data-cv-link]");
+  if (link) {
+    const sync = () => {
+      const lang = (document.documentElement.dataset.lang ?? "en") as
+        | "en"
+        | "es";
+      const href =
+        lang === "es"
+          ? (link.dataset.cvEs ?? link.href)
+          : (link.dataset.cvEn ?? link.href);
+      link.href = href;
+    };
+    sync();
+    document.addEventListener("lang:change", sync);
+  }
+</script>

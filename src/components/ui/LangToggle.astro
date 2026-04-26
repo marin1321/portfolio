@@ -1,0 +1,90 @@
+---
+/**
+ * LangToggle — EN / ES button.
+ *
+ * Switches `html[data-lang]` and `html[lang]`, persists the choice in
+ * localStorage, and dispatches a `lang:change` CustomEvent so other
+ * components (e.g. the CV link in Hero) can react.
+ */
+import { getStrings, type Lang } from "@data/i18n";
+
+interface Props {
+  lang?: Lang;
+  class?: string;
+}
+
+const { lang = "en", class: className } = Astro.props;
+const labels = {
+  en: getStrings("en").nav.langToggleLabel,
+  es: getStrings("es").nav.langToggleLabel,
+};
+---
+
+<button
+  type="button"
+  data-lang-toggle
+  aria-label={labels[lang]}
+  class:list={[
+    "inline-flex items-center gap-1 rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1.5 text-xs font-medium tracking-wide text-[var(--color-fg-soft)] transition-colors hover:bg-[var(--color-bg-muted)]",
+    className,
+  ]}
+>
+  <span
+    class="transition-colors data-[active=true]:text-[var(--color-fg)] data-[active=false]:text-[var(--color-fg-subtle)]"
+    data-lang-label="en"
+    data-active={lang === "en"}>EN</span
+  >
+  <span class="text-[var(--color-fg-subtle)]" aria-hidden="true">·</span>
+  <span
+    class="transition-colors data-[active=true]:text-[var(--color-fg)] data-[active=false]:text-[var(--color-fg-subtle)]"
+    data-lang-label="es"
+    data-active={lang === "es"}>ES</span
+  >
+</button>
+
+<script>
+  import { LANGS, type Lang } from "@data/i18n";
+
+  const setLang = (next: Lang) => {
+    document.documentElement.lang = next;
+    document.documentElement.dataset.lang = next;
+    try {
+      localStorage.setItem("lang", next);
+    } catch {
+      /* noop */
+    }
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-label]")
+      .forEach((el) => {
+        el.dataset.active = el.dataset.langLabel === next ? "true" : "false";
+      });
+    document.dispatchEvent(new CustomEvent("lang:change", { detail: next }));
+  };
+
+  const initToggles = () => {
+    const current = (document.documentElement.dataset.lang ?? "en") as Lang;
+
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-label]")
+      .forEach((el) => {
+        el.dataset.active = el.dataset.langLabel === current ? "true" : "false";
+      });
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-lang-toggle]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const now =
+            (document.documentElement.dataset.lang as Lang) ?? "en";
+          const next: Lang = now === "en" ? "es" : "en";
+          if (LANGS.includes(next)) setLang(next);
+        });
+      });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initToggles);
+  } else {
+    initToggles();
+  }
+</script>

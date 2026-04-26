@@ -1,0 +1,183 @@
+---
+/**
+ * BaseLayout — single page wrapper.
+ *
+ * Responsibilities:
+ *  - SEO meta tags + Open Graph + Twitter Card
+ *  - Geist font loading (preconnect + font-display: swap)
+ *  - Early language initialization (avoids EN/ES content flash)
+ *  - Global scroll-reveal via IntersectionObserver
+ *
+ * Page content (sections) is rendered through <slot />.
+ */
+
+import "@styles/global.css";
+import {
+  DEFAULT_LANG,
+  LANGS,
+  getStrings,
+  personal,
+  type Lang,
+} from "@data/i18n";
+
+interface Props {
+  /** Default language rendered in the HTML (overridden on the client). */
+  lang?: Lang;
+  /** Optional override for the page title. */
+  title?: string;
+  /** Optional override for the meta description. */
+  description?: string;
+}
+
+const { lang = DEFAULT_LANG, title, description } = Astro.props;
+const strings = getStrings(lang);
+
+const pageTitle = title ?? strings.meta.title;
+const pageDescription = description ?? strings.meta.description;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? personal.domain);
+const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Primary meta -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="author" content={personal.fullName} />
+    <meta
+      name="keywords"
+      content="Oscar Marín, Full Stack Developer, Python, Django, Vue, AWS, AI agents, DailyBot, Colombia, remote"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={strings.meta.ogTitle} />
+    <meta property="og:description" content={strings.meta.ogDescription} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === "es" ? "es_CO" : "en_US"} />
+    <meta
+      property="og:locale:alternate"
+      content={lang === "es" ? "en_US" : "es_CO"}
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={strings.meta.ogTitle} />
+    <meta name="twitter:description" content={strings.meta.ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Fonts: Geist (display=swap, avoids CLS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- JSON-LD structured data -->
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: personal.fullName,
+        givenName: "Oscar",
+        familyName: "Marín Molina",
+        jobTitle: "Full Stack Engineer",
+        email: `mailto:${personal.email}`,
+        url: personal.domain,
+        sameAs: [personal.linkedin, personal.github],
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Calarcá",
+          addressRegion: "Quindío",
+          addressCountry: "CO",
+        },
+      })}
+    />
+
+    <!-- Early language: applies the persisted language before the first
+         paint to avoid a flash when toggling EN/ES. -->
+    <script is:inline define:vars={{ LANGS, DEFAULT_LANG }}>
+      (function () {
+        try {
+          const stored = localStorage.getItem("lang");
+          if (stored && LANGS.includes(stored)) {
+            document.documentElement.lang = stored;
+            document.documentElement.dataset.lang = stored;
+          } else {
+            const navLang = (navigator.language || DEFAULT_LANG)
+              .slice(0, 2)
+              .toLowerCase();
+            const initial = LANGS.includes(navLang) ? navLang : DEFAULT_LANG;
+            document.documentElement.lang = initial;
+            document.documentElement.dataset.lang = initial;
+          }
+        } catch (_) {
+          /* localStorage unavailable — fall back to SSR default */
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-[var(--color-fg)] focus:px-4 focus:py-2 focus:text-[var(--color-bg)]"
+    >
+      Skip to content
+    </a>
+
+    <slot />
+
+    <!-- Global scroll-reveal via IntersectionObserver. -->
+    <script>
+      const reveal = () => {
+        const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
+        if (
+          !("IntersectionObserver" in window) ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          els.forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
+        );
+        els.forEach((el) => io.observe(el));
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", reveal);
+      } else {
+        reveal();
+      }
+    </script>
+  </body>
+</html>

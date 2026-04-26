@@ -1,0 +1,30 @@
+---
+/**
+ * Localized — renders both languages into static HTML.
+ *
+ * The inactive language is hidden via CSS based on `html[data-lang]`.
+ * The language toggle only flips that attribute — zero per-element JS.
+ *
+ * Any additional HTML attribute (class, id, data-*, aria-*, role…) is
+ * forwarded to the wrapper element.
+ *
+ * Usage:
+ *   <Localized en="Hello" es="Hola" />
+ *   <Localized as="h1" class="text-3xl" en="Hello" es="Hola" />
+ *   <Localized as="p" data-reveal en="Hello" es="Hola" />
+ */
+import type { HTMLAttributes } from "astro/types";
+
+type Props = Omit<HTMLAttributes<"div">, "children"> & {
+  en: string;
+  es: string;
+  /** HTML tag to render. Defaults to `span`. */
+  as?: string;
+};
+
+const { en, es, as: Tag = "span", ...rest } = Astro.props;
+---
+
+<Tag {...rest}>
+  <span data-l="en">{en}</span><span data-l="es">{es}</span>
+</Tag>

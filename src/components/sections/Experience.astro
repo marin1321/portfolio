@@ -1,0 +1,43 @@
+---
+/**
+ * Experience — vertical timeline in reverse chronological order.
+ */
+import { getStrings } from "@data/i18n";
+import { experience } from "@data/experience";
+import Localized from "@components/ui/Localized.astro";
+import TimelineItem from "@components/ui/TimelineItem.astro";
+
+const en = getStrings("en").experience;
+const es = getStrings("es").experience;
+---
+
+<section id="experience" class="section bg-[var(--color-bg-soft)]">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <header data-reveal class="lg:col-span-4">
+      <Localized
+        as="p"
+        class="section-eyebrow"
+        en={en.eyebrow}
+        es={es.eyebrow}
+      />
+      <Localized
+        as="h2"
+        class="section-heading"
+        en={en.heading}
+        es={es.heading}
+      />
+      <Localized
+        as="p"
+        class="mt-5 text-base leading-relaxed text-[var(--color-fg-soft)]"
+        en={en.description}
+        es={es.description}
+      />
+    </header>
+
+    <div class="lg:col-span-8">
+      <ol class="relative">
+        {experience.map((entry) => <TimelineItem entry={entry} />)}
+      </ol>
+    </div>
+  </div>
+</section>

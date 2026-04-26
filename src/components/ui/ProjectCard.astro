@@ -1,0 +1,79 @@
+---
+/**
+ * ProjectCard — project card with bilingual content.
+ *
+ * Renders both languages (EN/ES) and lets CSS hide the inactive one.
+ * Avoids client-side re-renders when toggling the language.
+ */
+
+import type { Project } from "@data/projects";
+import { getStrings } from "@data/i18n";
+import Localized from "./Localized.astro";
+import SkillTag from "./SkillTag.astro";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const en = getStrings("en").work;
+const es = getStrings("es").work;
+
+const badgeLabels = {
+  production: { en: en.badgeProduction, es: es.badgeProduction },
+  client: { en: en.badgeClient, es: es.badgeClient },
+};
+const highlightLabels = { en: en.highlightLabel, es: es.highlightLabel };
+const badge = badgeLabels[project.type];
+---
+
+<article
+  data-reveal
+  class="group flex h-full flex-col gap-5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-7 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-fg-subtle)] hover:shadow-[var(--shadow-card-hover)]"
+>
+  <header class="flex flex-wrap items-center gap-3">
+    <Localized
+      class="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-soft)]"
+      en={badge.en}
+      es={badge.es}
+    />
+    <span class="text-xs text-[var(--color-fg-muted)]">{project.company}</span>
+  </header>
+
+  <div class="flex flex-1 flex-col gap-4">
+    <Localized
+      as="h3"
+      class="text-xl font-medium leading-snug tracking-tight text-[var(--color-fg)]"
+      en={project.content.en.title}
+      es={project.content.es.title}
+    />
+
+    <Localized
+      as="p"
+      class="text-[15px] leading-relaxed text-[var(--color-fg-soft)]"
+      en={project.content.en.description}
+      es={project.content.es.description}
+    />
+
+    <div
+      class="rounded-lg border-l-2 border-[var(--color-fg)] bg-[var(--color-bg-soft)] py-2 pl-4 pr-3"
+    >
+      <Localized
+        as="p"
+        class="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+        en={highlightLabels.en}
+        es={highlightLabels.es}
+      />
+      <Localized
+        as="p"
+        class="mt-1.5 text-sm leading-relaxed text-[var(--color-fg-soft)]"
+        en={project.content.en.highlight}
+        es={project.content.es.highlight}
+      />
+    </div>
+  </div>
+
+  <footer class="flex flex-wrap gap-2 pt-2">
+    {project.tags.map((tag) => <SkillTag label={tag} />)}
+  </footer>
+</article>

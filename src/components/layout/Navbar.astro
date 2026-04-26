@@ -1,0 +1,161 @@
+---
+/**
+ * Navbar — sticky header with backdrop-blur on scroll.
+ *
+ * Includes:
+ *  - Logo / name (anchors to #hero)
+ *  - Smooth-scroll section links
+ *  - EN/ES toggle
+ *  - Hamburger menu on mobile (<768px)
+ */
+import { getStrings } from "@data/i18n";
+import Localized from "@components/ui/Localized.astro";
+import LangToggle from "@components/ui/LangToggle.astro";
+
+const en = getStrings("en").nav;
+const es = getStrings("es").nav;
+
+const links = [
+  { href: "#about", en: en.about, es: es.about },
+  { href: "#work", en: en.work, es: es.work },
+  { href: "#experience", en: en.experience, es: es.experience },
+  { href: "#contact", en: en.contact, es: es.contact },
+];
+---
+
+<header
+  data-navbar
+  class="fixed inset-x-0 top-0 z-40 transition-[background-color,backdrop-filter,border-color,box-shadow] duration-300 data-[scrolled=true]:border-b data-[scrolled=true]:border-[var(--color-border-soft)] data-[scrolled=true]:bg-[color-mix(in_oklab,var(--color-bg)_82%,transparent)] data-[scrolled=true]:backdrop-blur-md"
+>
+  <nav
+    aria-label="Primary"
+    class="container-page flex h-16 items-center justify-between gap-4"
+  >
+    <a
+      href="#hero"
+      class="text-sm font-medium tracking-tight text-[var(--color-fg)] hover:text-[var(--color-fg-soft)]"
+    >
+      Oscar Marín
+    </a>
+
+    <ul class="hidden items-center gap-7 md:flex">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="text-sm text-[var(--color-fg-soft)] transition-colors hover:text-[var(--color-fg)]"
+            >
+              <Localized en={link.en} es={link.es} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="flex items-center gap-2">
+      <LangToggle class="hidden md:inline-flex" />
+
+      <button
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-fg)] md:hidden"
+      >
+        <Localized class="sr-only" en={en.menuOpen} es={es.menuOpen} />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4 data-[open=true]:hidden"
+          data-menu-icon="closed"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="hidden h-4 w-4 data-[open=true]:block"
+          data-menu-icon="open"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M18 6 6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    data-menu-panel
+    class="hidden border-b border-[var(--color-border-soft)] bg-[var(--color-bg)] md:hidden"
+  >
+    <ul class="container-page flex flex-col gap-1 py-4">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              data-menu-link
+              class="block rounded-md px-2 py-2 text-base text-[var(--color-fg-soft)] transition-colors hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-fg)]"
+            >
+              <Localized en={link.en} es={link.es} />
+            </a>
+          </li>
+        ))
+      }
+      <li class="pt-2">
+        <LangToggle />
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const navbar = document.querySelector<HTMLElement>("[data-navbar]");
+  const toggle = document.querySelector<HTMLButtonElement>(
+    "[data-menu-toggle]",
+  );
+  const panel = document.querySelector<HTMLElement>("[data-menu-panel]");
+
+  const setScrolled = () => {
+    if (!navbar) return;
+    navbar.dataset.scrolled = window.scrollY > 8 ? "true" : "false";
+  };
+
+  setScrolled();
+  window.addEventListener("scroll", setScrolled, { passive: true });
+
+  if (toggle && panel) {
+    const setOpen = (open: boolean) => {
+      panel.classList.toggle("hidden", !open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.querySelectorAll<HTMLElement>("[data-menu-icon]").forEach((el) => {
+        el.dataset.open =
+          (el.dataset.menuIcon === "open") === open ? "true" : "false";
+      });
+    };
+
+    toggle.addEventListener("click", () => {
+      const open = panel.classList.contains("hidden");
+      setOpen(open);
+    });
+
+    panel.querySelectorAll<HTMLAnchorElement>("[data-menu-link]").forEach(
+      (link) => link.addEventListener("click", () => setOpen(false)),
+    );
+  }
+</script>

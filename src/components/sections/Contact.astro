@@ -1,0 +1,101 @@
+---
+/**
+ * Contact — final CTA with email + LinkedIn + GitHub + location.
+ *
+ * An optional contact form (Formspree) will be added in a later phase
+ * (see RF-11 in the project plan).
+ */
+import { getStrings, personal } from "@data/i18n";
+import Localized from "@components/ui/Localized.astro";
+
+const en = getStrings("en").contact;
+const es = getStrings("es").contact;
+
+const links = [
+  {
+    label: { en: en.emailLabel, es: es.emailLabel },
+    value: personal.email,
+    href: `mailto:${personal.email}`,
+    external: false,
+  },
+  {
+    label: { en: en.linkedinLabel, es: es.linkedinLabel },
+    value: personal.linkedinHandle,
+    href: personal.linkedin,
+    external: true,
+  },
+  {
+    label: { en: en.githubLabel, es: es.githubLabel },
+    value: personal.githubHandle,
+    href: personal.github,
+    external: true,
+  },
+  {
+    label: { en: en.locationLabel, es: es.locationLabel },
+    value: en.locationValue,
+    valueEs: es.locationValue,
+    href: null,
+    external: false,
+  },
+];
+---
+
+<section id="contact" class="section">
+  <div class="container-page">
+    <header data-reveal class="max-w-3xl">
+      <Localized
+        as="p"
+        class="section-eyebrow"
+        en={en.eyebrow}
+        es={es.eyebrow}
+      />
+      <Localized
+        as="h2"
+        class="section-heading"
+        en={en.heading}
+        es={es.heading}
+      />
+      <Localized
+        as="p"
+        class="mt-5 text-base leading-relaxed text-[var(--color-fg-soft)]"
+        en={en.description}
+        es={es.description}
+      />
+    </header>
+
+    <dl
+      data-reveal
+      class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+    >
+      {
+        links.map((item) => (
+          <div class="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-5">
+            <Localized
+              as="dt"
+              class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+              en={item.label.en}
+              es={item.label.es}
+            />
+            <dd class="mt-2 text-sm text-[var(--color-fg)]">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  {...(item.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  class="break-all transition-colors hover:text-[var(--color-fg-soft)]"
+                >
+                  {item.value}
+                </a>
+              ) : item.valueEs ? (
+                <Localized en={item.value} es={item.valueEs} />
+              ) : (
+                item.value
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
