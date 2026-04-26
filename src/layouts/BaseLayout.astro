@@ -44,10 +44,13 @@ const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
+    <meta name="color-scheme" content="light dark" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
@@ -62,10 +65,15 @@ const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={personal.fullName} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={strings.meta.ogTitle} />
     <meta property="og:description" content={strings.meta.ogDescription} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={strings.meta.ogTitle} />
     <meta property="og:locale" content={lang === "es" ? "es_CO" : "en_US"} />
     <meta
       property="og:locale:alternate"
@@ -77,6 +85,7 @@ const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
     <meta name="twitter:title" content={strings.meta.ogTitle} />
     <meta name="twitter:description" content={strings.meta.ogDescription} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={strings.meta.ogTitle} />
 
     <!-- Fonts: Geist (display=swap, avoids CLS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -12,7 +12,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check"
+    "check": "astro check",
+    "build:assets": "node scripts/build-assets.mjs"
   },
   "dependencies": {
     "astro": "^6.1.9",

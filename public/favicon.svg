@@ -1,4 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="6" fill="#18181b"/>
-  <text x="16" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="16" fill="#fafafa">OM</text>
+  <title>OM &#8212; Oscar Mar&#237;n</title>
+  <style>
+    .bg { fill: #18181b; }
+    .fg { fill: #fafafa; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #fafafa; }
+      .fg { fill: #18181b; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="7" />
+  <text
+    class="fg"
+    x="16"
+    y="22.5"
+    text-anchor="middle"
+    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+    font-weight="600"
+    font-size="15.5"
+    letter-spacing="-0.4"
+  >OM</text>
 </svg>
