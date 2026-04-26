@@ -29,6 +29,10 @@ pnpm-debug.log*
 *.swp
 *.swo
 
+# Cursor (rules and project-local agent config kept local-only)
+.cursor/
+AGENTS.md
+
 # OS
 .DS_Store
 Thumbs.db
