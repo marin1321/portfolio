@@ -11,7 +11,16 @@ const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 export default defineConfig({
   site: "https://oscarmarin.dev",
   output: "static",
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // Single-page portfolio: keep refresh hints conservative and give
+      // the home page full priority. The same URL serves both languages
+      // via the client-side toggle, so no per-locale entries are needed.
+      changefreq: "monthly",
+      priority: 1.0,
+      lastmod: new Date(),
+    }),
+  ],
   vite: {
     // Cast: Vite types from Astro and the root resolution disagree.
     plugins: [/** @type {any} */ (tailwindcss())],
