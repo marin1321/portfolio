@@ -34,8 +34,85 @@ const strings = getStrings(lang);
 
 const pageTitle = title ?? strings.meta.title;
 const pageDescription = description ?? strings.meta.description;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? personal.domain);
-const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
+const siteOrigin = Astro.site ?? personal.domain;
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
+const ogImage = new URL("/og-image.png", siteOrigin);
+
+/* Structured data — combines Person and WebSite under a @graph so both
+ * entities share the document and link to each other (`mainEntity`).
+ * This gives crawlers a richer understanding of who the site is about
+ * and which languages it serves without duplicating context blocks. */
+const personId = `${canonicalURL.href}#person`;
+const websiteId = `${canonicalURL.href}#website`;
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: personal.fullName,
+      givenName: "Oscar",
+      familyName: "Marín Molina",
+      alternateName: personal.shortName,
+      jobTitle: "Full Stack Engineer",
+      description: strings.meta.ogDescription,
+      email: `mailto:${personal.email}`,
+      url: canonicalURL.href,
+      image: ogImage.href,
+      sameAs: [personal.linkedin, personal.github],
+      knowsLanguage: ["en", "es"],
+      knowsAbout: [
+        "Full Stack Development",
+        "Backend Engineering",
+        "Python",
+        "Django",
+        "Celery",
+        "Vue.js",
+        "TypeScript",
+        "AWS",
+        "AI agents",
+        "OAuth2",
+        "Webhooks",
+        "Serverless",
+      ],
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Calarcá",
+        addressRegion: "Quindío",
+        addressCountry: "CO",
+      },
+      nationality: { "@type": "Country", name: "Colombia" },
+      worksFor: {
+        "@type": "Organization",
+        name: "DailyBot",
+        url: "https://www.dailybot.com",
+      },
+      alumniOf: [
+        {
+          "@type": "CollegeOrUniversity",
+          name: "Universidad del Quindío",
+          url: "https://www.uniquindio.edu.co",
+        },
+        {
+          "@type": "EducationalOrganization",
+          name: "SENA — Servicio Nacional de Aprendizaje",
+          url: "https://www.sena.edu.co",
+        },
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: canonicalURL.href,
+      name: personal.fullName,
+      description: pageDescription,
+      inLanguage: ["en", "es"],
+      author: { "@id": personId },
+      publisher: { "@id": personId },
+      mainEntity: { "@id": personId },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -53,6 +130,20 @@ const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Hreflang alternates — single URL serves both languages via
+         client-side toggle, so each alternate points at the same
+         canonical and signals the multilingual availability. -->
+    <link rel="alternate" hreflang="en" href={canonicalURL} />
+    <link rel="alternate" hreflang="es" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
+
+    <!-- Identity verification (rel=me for IndieAuth / Mastodon) +
+         author profile for search engines. -->
+    <link rel="me" href={personal.linkedin} />
+    <link rel="me" href={personal.github} />
+    <link rel="me" href={`mailto:${personal.email}`} />
+    <link rel="author" href={personal.linkedin} />
 
     <!-- Primary meta -->
     <title>{pageTitle}</title>
@@ -100,27 +191,11 @@ const ogImage = new URL("/og-image.png", Astro.site ?? personal.domain);
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
     />
 
-    <!-- JSON-LD structured data -->
+    <!-- JSON-LD structured data: Person + WebSite under @graph. -->
     <script
       is:inline
       type="application/ld+json"
-      set:html={JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: personal.fullName,
-        givenName: "Oscar",
-        familyName: "Marín Molina",
-        jobTitle: "Full Stack Engineer",
-        email: `mailto:${personal.email}`,
-        url: personal.domain,
-        sameAs: [personal.linkedin, personal.github],
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Calarcá",
-          addressRegion: "Quindío",
-          addressCountry: "CO",
-        },
-      })}
+      set:html={JSON.stringify(structuredData)}
     />
 
     <!-- Early language: applies the persisted language before the first
