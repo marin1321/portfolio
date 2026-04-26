@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <title>Oscar Mar&#237;n &#8212; Full Stack Engineer</title>
+
+  <rect width="1200" height="630" fill="#18181b" />
+
+  <defs>
+    <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#fafafa" fill-opacity="0.05" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#dots)" />
+
+  <g transform="translate(80, 80)">
+    <rect width="64" height="64" rx="14" fill="#fafafa" />
+    <text
+      x="32"
+      y="44"
+      text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+      font-weight="600"
+      font-size="30"
+      letter-spacing="-0.8"
+      fill="#18181b"
+    >OM</text>
+  </g>
+
+  <g transform="translate(950, 90)">
+    <rect width="170" height="44" rx="22" fill="none" stroke="#fafafa" stroke-opacity="0.35" stroke-width="1" />
+    <circle cx="22" cy="22" r="4" fill="#34d399" />
+    <text
+      x="38"
+      y="29"
+      font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+      font-weight="500"
+      font-size="14"
+      fill="#fafafa"
+      fill-opacity="0.85"
+    >Available for hire</text>
+  </g>
+
+  <g transform="translate(80, 295)">
+    <text
+      x="0"
+      y="0"
+      font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+      font-weight="500"
+      font-size="84"
+      letter-spacing="-2.5"
+      fill="#fafafa"
+    >Oscar Mar&#237;n</text>
+    <text
+      x="0"
+      y="68"
+      font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+      font-weight="400"
+      font-size="36"
+      letter-spacing="-0.8"
+      fill="#fafafa"
+      fill-opacity="0.75"
+    >Full Stack Engineer</text>
+  </g>
+
+  <line x1="80" y1="510" x2="1120" y2="510" stroke="#fafafa" stroke-opacity="0.18" stroke-width="1" />
+
+  <text
+    x="80"
+    y="555"
+    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+    font-weight="400"
+    font-size="22"
+    letter-spacing="-0.3"
+    fill="#fafafa"
+    fill-opacity="0.6"
+  >4+ years shipping production software &#183; Currently at DailyBot</text>
+
+  <text
+    x="1120"
+    y="555"
+    text-anchor="end"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    font-weight="400"
+    font-size="18"
+    letter-spacing="0.4"
+    fill="#fafafa"
+    fill-opacity="0.45"
+  >oscarmarin.dev</text>
+</svg>
