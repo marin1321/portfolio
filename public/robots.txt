@@ -1,4 +1,6 @@
+# Personal portfolio — fully indexable by all well-behaved crawlers.
 User-agent: *
 Allow: /
 
+# Sitemap index — points to the localized sitemap entries.
 Sitemap: https://oscarmarin.dev/sitemap-index.xml

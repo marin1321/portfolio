@@ -25,7 +25,11 @@ const categories = (
 }));
 ---
 
-<section id="about" class="section bg-[var(--color-bg-soft)]">
+<section
+  id="about"
+  class="section bg-[var(--color-bg-soft)]"
+  aria-labelledby="about-heading"
+>
   <div class="container-page grid gap-12 lg:grid-cols-12">
     <header data-reveal class="lg:col-span-4">
       <Localized
@@ -36,6 +40,7 @@ const categories = (
       />
       <Localized
         as="h2"
+        id="about-heading"
         class="section-heading"
         en={en.heading}
         es={es.heading}
