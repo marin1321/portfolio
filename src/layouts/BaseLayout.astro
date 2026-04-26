@@ -180,18 +180,30 @@ const structuredData = {
 
     <!-- Fonts: Geist (display=swap avoids CLS).
          Strategy: warm the connection with preconnect, then load the
-         stylesheet without blocking render via the rel=preload swap
-         trick — the <noscript> fallback keeps it functional when JS
-         is disabled. The previous setup duplicated the request as
-         both preload and stylesheet; this version loads it once. -->
+         stylesheet without blocking render — the link starts as a
+         preload and is promoted to a stylesheet by the inline script
+         once it has been fetched. <noscript> covers JS-off clients.
+         The previous setup downloaded the same CSS twice (preload +
+         stylesheet); this version loads it once. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      data-font-stylesheet
       rel="preload"
       as="style"
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <script is:inline>
+      (function () {
+        var link = document.querySelector("[data-font-stylesheet]");
+        if (!link) return;
+        var promote = function () {
+          link.rel = "stylesheet";
+        };
+        if (link.sheet) promote();
+        else link.addEventListener("load", promote, { once: true });
+      })();
+    </script>
     <noscript>
       <link
         rel="stylesheet"
