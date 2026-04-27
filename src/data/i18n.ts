@@ -153,6 +153,21 @@ export interface MetaStrings {
   ogDescription: string;
 }
 
+/** Copy for the standalone 404 page (`src/pages/404.astro`). The page
+ *  is statically pre-rendered into `dist/404.html` and served by the
+ *  host (Vercel / Netlify / GH Pages) on any unmatched route. */
+export interface NotFoundStrings {
+  /** <title> tag content. */
+  title: string;
+  /** <meta name="description"> override for the page. */
+  description: string;
+  /** Small uppercase eyebrow shown above the heading ("404"). */
+  eyebrow: string;
+  heading: string;
+  subtitle: string;
+  cta: string;
+}
+
 export interface UIStrings {
   meta: MetaStrings;
   nav: NavStrings;
@@ -162,6 +177,7 @@ export interface UIStrings {
   experience: ExperienceStrings;
   contact: ContactStrings;
   footer: FooterStrings;
+  notFound: NotFoundStrings;
 }
 
 const en: UIStrings = {
@@ -288,6 +304,16 @@ const en: UIStrings = {
   footer: {
     builtWith: "Built with Astro & Tailwind CSS",
   },
+  notFound: {
+    title: "404 — Page not found · Oscar Marín",
+    description:
+      "The page you're looking for doesn't exist or has moved. Head back to the homepage to keep exploring.",
+    eyebrow: "404",
+    heading: "This page doesn't exist.",
+    subtitle:
+      "The link might be broken or the page may have moved. Let's get you back on track.",
+    cta: "Back to home",
+  },
 };
 
 const es: UIStrings = {
@@ -413,6 +439,16 @@ const es: UIStrings = {
   },
   footer: {
     builtWith: "Construido con Astro y Tailwind CSS",
+  },
+  notFound: {
+    title: "404 — Página no encontrada · Oscar Marín",
+    description:
+      "La página que buscas no existe o se ha movido. Vuelve al inicio para seguir explorando.",
+    eyebrow: "404",
+    heading: "Esta página no existe.",
+    subtitle:
+      "El enlace puede estar roto o la página se movió. Volvamos al inicio.",
+    cta: "Volver al inicio",
   },
 };
 
