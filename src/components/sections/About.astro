@@ -1,7 +1,15 @@
 ---
 /**
  * About — bio + stack grouped by category + education.
+ *
+ * The portrait is imported from `src/assets/` (not `public/`) so
+ * Astro's `<Image>` can take over: it emits an optimized variant
+ * (WebP), inlines the intrinsic `width` / `height` to prevent CLS,
+ * lazy-loads it (this section is below the fold), and produces a
+ * 1x / 2x srcset for retina sharpness without shipping the full
+ * 1024 px source on every viewport.
  */
+import { Image } from "astro:assets";
 import {
   getStrings,
   stackByCategory,
@@ -9,6 +17,7 @@ import {
 } from "@data/i18n";
 import Localized from "@components/ui/Localized.astro";
 import SkillTag from "@components/ui/SkillTag.astro";
+import portrait from "@/assets/portrait.png";
 
 const en = getStrings("en").about;
 const es = getStrings("es").about;
@@ -45,6 +54,21 @@ const categories = (
         en={en.heading}
         es={es.heading}
       />
+
+      <figure class="mt-8 w-44 sm:w-56 lg:mt-10 lg:w-full lg:max-w-[18rem]">
+        <Image
+          src={portrait}
+          alt={en.portraitAlt}
+          width={320}
+          densities={[1, 2]}
+          loading="lazy"
+          decoding="async"
+          data-portrait
+          data-alt-en={en.portraitAlt}
+          data-alt-es={es.portraitAlt}
+          class="block h-auto w-full rounded-[var(--radius-card)] border border-[var(--color-border)] object-cover shadow-[var(--shadow-card)]"
+        />
+      </figure>
     </header>
 
     <div class="flex flex-col gap-12 lg:col-span-8">
@@ -121,3 +145,27 @@ const categories = (
     </div>
   </div>
 </section>
+
+<script>
+  /* Keep the portrait alt text in sync with the active language so
+   * screen readers in EN / ES get the right description. Native
+   * <img> alt updates aren't always re-announced by ATs, but the
+   * accessibility tree is updated correctly for any element queried
+   * after the change (e.g. on next focus or when the rotor is
+   * reopened on iOS / VoiceOver). */
+  const img = document.querySelector<HTMLImageElement>("[data-portrait]");
+  if (img) {
+    const sync = () => {
+      const lang = (document.documentElement.dataset.lang ?? "en") as
+        | "en"
+        | "es";
+      const alt =
+        lang === "es"
+          ? (img.dataset.altEs ?? img.alt)
+          : (img.dataset.altEn ?? img.alt);
+      img.alt = alt;
+    };
+    sync();
+    document.addEventListener("lang:change", sync);
+  }
+</script>
