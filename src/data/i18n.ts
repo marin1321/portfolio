@@ -161,11 +161,12 @@ export interface NotFoundStrings {
   title: string;
   /** <meta name="description"> override for the page. */
   description: string;
-  /** Small uppercase eyebrow shown above the heading ("404"). */
-  eyebrow: string;
   heading: string;
   subtitle: string;
+  /** Primary CTA — sends the visitor back to the homepage. */
   cta: string;
+  /** Secondary CTA — deep-links to the work section. */
+  ctaSecondary: string;
 }
 
 export interface UIStrings {
@@ -308,11 +309,11 @@ const en: UIStrings = {
     title: "404 — Page not found · Oscar Marín",
     description:
       "The page you're looking for doesn't exist or has moved. Head back to the homepage to keep exploring.",
-    eyebrow: "404",
-    heading: "This page doesn't exist.",
+    heading: "Looks like you took a wrong turn.",
     subtitle:
       "The link might be broken or the page may have moved. Let's get you back on track.",
     cta: "Back to home",
+    ctaSecondary: "View my work",
   },
 };
 
@@ -444,11 +445,11 @@ const es: UIStrings = {
     title: "404 — Página no encontrada · Oscar Marín",
     description:
       "La página que buscas no existe o se ha movido. Vuelve al inicio para seguir explorando.",
-    eyebrow: "404",
-    heading: "Esta página no existe.",
+    heading: "Parece que tomaste un desvío.",
     subtitle:
       "El enlace puede estar roto o la página se movió. Volvamos al inicio.",
     cta: "Volver al inicio",
+    ctaSecondary: "Ver mi trabajo",
   },
 };
 

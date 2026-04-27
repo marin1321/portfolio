@@ -10,6 +10,16 @@
  * is rendered in both languages via <Localized> and revealed by the
  * existing `html[data-lang]` mechanism — no flash on language switch.
  *
+ * Visual treatment:
+ *   - Massive "404" headline with mixed fill: outer digits use a
+ *     vertical gradient, the centre "0" is outlined and gently tilts.
+ *   - A monospace "pill" displays the actual URL the visitor tried,
+ *     populated client-side from `window.location.pathname`.
+ *   - All decorative motion is gated behind `prefers-reduced-motion`
+ *     via the global wildcard rule in `global.css` — the entrance
+ *     animation, the breathing scale and the tilting "0" all collapse
+ *     to ~0ms when the user opts out.
+ *
  * <title> and <meta name="description"> can't be swapped client-side
  * with the same data-lang trick, so they're rendered in the SSR
  * default language (English). That's the right call: search engines
@@ -31,49 +41,262 @@ const es = getStrings("es").notFound;
 
   <main
     id="main"
-    class="container-page flex min-h-[calc(100vh-12rem)] flex-col items-center justify-center gap-6 py-24 text-center sm:py-32"
+    class="not-found-main container-page relative flex min-h-[calc(100vh-12rem)] flex-col items-center justify-center gap-7 overflow-hidden py-20 text-center sm:py-24"
   >
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-fg-muted)] [animation:var(--animate-fade-in)]"
-    >
-      <Localized en={en.eyebrow} es={es.eyebrow} />
+    <div class="not-found-glow" aria-hidden="true"></div>
+
+    <div class="not-found-display" aria-hidden="true">
+      <span class="not-found-digit">4</span>
+      <span class="not-found-zero">0</span>
+      <span class="not-found-digit">4</span>
+    </div>
+
+    <p class="not-found-path" aria-hidden="true">
+      <span class="not-found-path-status">404</span>
+      <span class="not-found-path-arrow" aria-hidden="true">→</span>
+      <span class="not-found-path-value" data-not-found-path-value>/</span>
     </p>
 
     <Localized
       as="h1"
-      class="max-w-2xl text-4xl font-medium tracking-tight text-[var(--color-fg)] sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05] [animation:var(--animate-fade-up)] [animation-delay:80ms]"
+      class="max-w-2xl text-2xl font-medium tracking-tight text-[var(--color-fg)] sm:text-3xl lg:text-4xl [animation:var(--animate-fade-up)] [animation-delay:240ms]"
       en={en.heading}
       es={es.heading}
     />
 
     <Localized
       as="p"
-      class="max-w-xl text-base leading-relaxed text-[var(--color-fg-soft)] sm:text-lg [animation:var(--animate-fade-up)] [animation-delay:160ms]"
+      class="max-w-xl text-base leading-relaxed text-[var(--color-fg-soft)] sm:text-lg [animation:var(--animate-fade-up)] [animation-delay:320ms]"
       en={en.subtitle}
       es={es.subtitle}
     />
 
-    <a
-      href="/"
-      class="btn-primary [animation:var(--animate-fade-up)] [animation-delay:240ms]"
+    <div
+      class="flex flex-wrap items-center justify-center gap-3 [animation:var(--animate-fade-up)] [animation-delay:400ms]"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.75"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-4 w-4"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M19 12H5M12 19l-7-7 7-7"></path>
-      </svg>
-      <Localized en={en.cta} es={es.cta} />
-    </a>
+      <a href="/" class="btn-primary">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        <Localized en={en.cta} es={es.cta} />
+      </a>
+      <a href="/#work" class="btn-secondary">
+        <Localized en={en.ctaSecondary} es={es.ctaSecondary} />
+      </a>
+    </div>
   </main>
 
   <Footer />
 </BaseLayout>
+
+<script>
+  // Surface the actual path the visitor tried to reach. Truncates long
+  // paths so the pill never breaks the layout. The query string is
+  // included to help curious users debug their own broken bookmarks.
+  const valueEl = document.querySelector<HTMLElement>(
+    "[data-not-found-path-value]",
+  );
+  if (valueEl) {
+    const { pathname, search } = window.location;
+    const full = `${pathname}${search}` || "/";
+    valueEl.textContent = full.length > 64 ? `${full.slice(0, 61)}…` : full;
+  }
+</script>
+
+<style>
+  /*
+   * Layout container — padding-top accounts for the sticky navbar so
+   * the headline lands roughly at optical centre, not visual centre.
+   */
+  .not-found-main {
+    padding-top: 6rem;
+  }
+
+  /*
+   * Decorative radial glow behind the headline. Lives on its own layer
+   * so it can pulse without re-paint-cascading into the text.
+   */
+  .not-found-glow {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    width: min(40rem, 90vw);
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--color-fg) 8%, transparent) 0%,
+      transparent 60%
+    );
+    filter: blur(40px);
+    z-index: 0;
+    pointer-events: none;
+    animation: not-found-pulse 8s ease-in-out infinite;
+  }
+
+  /*
+   * Massive 404 — clamp() keeps it readable from 320px up to ultrawide.
+   * z-index keeps it above the glow.
+   */
+  .not-found-display {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.04em;
+    font-family: var(--font-sans);
+    font-size: clamp(7rem, 22vw, 14rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    user-select: none;
+    animation:
+      not-found-enter 800ms var(--ease-out-expo) both,
+      not-found-breathe 6s ease-in-out 800ms infinite;
+  }
+
+  /*
+   * Outer digits use a top-down gradient that fades into the muted
+   * foreground. Reads as a confident, weighty headline in both themes.
+   */
+  .not-found-digit {
+    display: inline-block;
+    background: linear-gradient(
+      180deg,
+      var(--color-fg) 0%,
+      var(--color-fg-soft) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /*
+   * The hollow centre "0" reinforces the "missing" theme — the visitor
+   * fell through the gap. Stroke width scales up on larger viewports
+   * so the outline reads consistently against the body type.
+   */
+  .not-found-zero {
+    display: inline-block;
+    margin-inline: 0.04em;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px var(--color-fg);
+    transform-origin: 50% 55%;
+    animation: not-found-zero-tilt 7s ease-in-out infinite;
+  }
+
+  @media (min-width: 640px) {
+    .not-found-zero {
+      -webkit-text-stroke-width: 3px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .not-found-zero {
+      -webkit-text-stroke-width: 4px;
+    }
+  }
+
+  /*
+   * Monospace pill that surfaces the real URL the visitor hit. Keeps
+   * the page grounded for technical visitors and gives them an obvious
+   * "yes, this is the URL I typed" confirmation.
+   */
+  .not-found-path {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    max-width: min(36rem, 92vw);
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: -0.5rem;
+    padding: 0.375rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    background: var(--color-bg-soft);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    animation: var(--animate-fade-up);
+    animation-delay: 160ms;
+    animation-fill-mode: both;
+  }
+
+  .not-found-path-status {
+    color: var(--color-fg-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .not-found-path-arrow {
+    color: var(--color-fg-muted);
+  }
+
+  .not-found-path-value {
+    overflow: hidden;
+    color: var(--color-fg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Keyframes                                                           */
+  /* ------------------------------------------------------------------ */
+
+  @keyframes not-found-enter {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.94);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes not-found-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.014);
+    }
+  }
+
+  @keyframes not-found-zero-tilt {
+    0%,
+    100% {
+      transform: rotate(-7deg);
+    }
+    50% {
+      transform: rotate(7deg);
+    }
+  }
+
+  @keyframes not-found-pulse {
+    0%,
+    100% {
+      opacity: 0.7;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+  }
+</style>
