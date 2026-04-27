@@ -28,7 +28,7 @@ Personal portfolio website of **Oscar Marín** — Full Stack Engineer with 4+ y
 │   ├── components/
 │   │   ├── layout/           # Navbar, Footer
 │   │   ├── sections/         # Hero, About, Work, Experience, Contact
-│   │   └── ui/               # ProjectCard, SkillTag, TimelineItem, LangToggle, Localized
+│   │   └── ui/               # ProjectCard, ProjectDialog, ContactForm, SkillTag, LangToggle, ThemeToggle, Localized
 │   ├── data/
 │   │   ├── i18n.ts           # UI strings EN/ES + personal info + stack
 │   │   ├── site.ts           # Site config sourced from PUBLIC_* env vars
@@ -152,13 +152,12 @@ Performance baselines (mobile, simulated 4G, headless Chrome):
 
 ## Roadmap
 
-Phases 1–5 are complete (setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders, SEO, dark mode, project filter, contact form, Lighthouse 100/100). Remaining work:
+The full functional scope is shipped — setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders, SEO, dark mode, project filter, contact form, project detail modal, and Lighthouse 100/100/100/100. What's left is content + ops:
 
 - **Real CV PDFs** — drop the two files into `public/` (see [Public assets](#public-assets))
 - **Final OG image** — replace `src/assets/og-source.svg` with a designed version and re-run `npm run build:assets`
 - **Custom domain** — connect `oscarmarin.dev` (or chosen domain) in Vercel
 - **Formspree endpoint** — create a form at [formspree.io](https://formspree.io) and set `PUBLIC_FORMSPREE_ENDPOINT` in Vercel env vars (the form falls back to `mailto:` until configured)
-- **(Optional)** RF-10 — project detail modal
 
 ## Contact
 
