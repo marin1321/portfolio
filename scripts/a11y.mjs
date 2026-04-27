@@ -45,6 +45,11 @@ const FAIL_IMPACTS = new Set(["serious", "critical"]);
 
 function startPreview() {
   return new Promise((resolve, reject) => {
+    /* `detached: true` makes the spawned process the leader of a new
+     * process group so we can SIGTERM the whole tree later. Without
+     * this the npx wrapper swallows the signal and the actual astro/
+     * vite child keeps the event loop alive — that's what hung the
+     * a11y job on the first CI run. */
     const proc = spawn(
       "npx",
       [
@@ -55,7 +60,11 @@ function startPreview() {
         "--host",
         "127.0.0.1",
       ],
-      { stdio: ["ignore", "pipe", "pipe"], env: process.env },
+      {
+        stdio: ["ignore", "pipe", "pipe"],
+        env: process.env,
+        detached: true,
+      },
     );
     let resolved = false;
     proc.stdout.on("data", (chunk) => {
@@ -76,6 +85,18 @@ function startPreview() {
       }
     }, 4000);
   });
+}
+
+/** Kill the preview's entire process group so the npx wrapper, the
+ *  astro CLI and any vite children all go down together. Plain
+ *  `proc.kill()` only signals the wrapper. */
+function killPreviewTree(proc) {
+  if (!proc?.pid) return;
+  try {
+    process.kill(-proc.pid, "SIGTERM");
+  } catch {
+    /* group may already be gone */
+  }
 }
 
 async function waitUntilReady(url, attempts = 30) {
@@ -100,6 +121,10 @@ function formatViolation(v) {
   ];
   for (const node of v.nodes) {
     lines.push(`    • ${node.target.join(", ")}`);
+    if (node.failureSummary) {
+      const indented = node.failureSummary.replace(/\n/g, "\n      ");
+      lines.push(`      ${indented}`);
+    }
   }
   return lines.join("\n");
 }
@@ -130,6 +155,16 @@ async function run() {
       const url = `${BASE_URL}${target.path}`;
       const page = await browser.newPage();
       try {
+        /* Force reduced motion before navigation. The hero's fade-up
+         * animation runs for ~700 ms and was confusing axe-core's
+         * color-contrast check — at networkidle0, opacity was still
+         * ~0.95, blending the foreground with the white background
+         * and producing a phantom contrast failure. With reduce-
+         * motion the keyframes collapse to ~0 ms (see global.css)
+         * and axe samples the final, fully-rendered colors. */
+        await page.emulateMediaFeatures([
+          { name: "prefers-reduced-motion", value: "reduce" },
+        ]);
         console.log(`\n▸ Auditing ${target.name} — ${url}`);
         await page.goto(url, { waitUntil: "networkidle0", timeout: 30_000 });
 
@@ -175,7 +210,7 @@ async function run() {
   } finally {
     await browser.disconnect();
     await chrome.kill();
-    if (preview) preview.kill("SIGTERM");
+    killPreviewTree(preview);
   }
 
   console.log("\n──────── summary ────────");
@@ -197,7 +232,13 @@ async function run() {
   );
 }
 
-run().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+/* Force exit on success so any leftover handles (chrome-launcher's
+ * internal child, the preview process group, the puppeteer
+ * connection) don't keep Node alive past the audit. The runner's
+ * "Complete job" step reaps any actual orphans. */
+run()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

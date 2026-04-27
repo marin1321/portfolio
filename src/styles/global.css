@@ -356,6 +356,23 @@ html[data-lang="es"] [data-l="en"] {
     transform: none;
     transition: none;
   }
+
+  /* Global reduced-motion override — collapses every keyframe
+     animation, transition and smooth scroll to ~instant. Honors the
+     user's OS-level setting (vestibular safety) and gives audit tools
+     a stable, post-animation snapshot to measure (axe-core was
+     sampling the hero's fade-up mid-flight, mistaking the partial
+     opacity for a contrast failure). */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ============================================================
