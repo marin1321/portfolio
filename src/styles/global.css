@@ -32,6 +32,11 @@
      initial value at SSR time. */
   --color-browser-chrome: #ffffff;
 
+  /* Single error color used by form validation. Tuned for AAA
+     contrast against the light surface; the dark-theme override
+     bumps lightness so it stays legible on the deep background. */
+  --color-error: #b91c1c;
+
   /* Typography — Geist (two weights) */
   --font-sans:
     "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -119,6 +124,7 @@ html[data-theme="dark"] {
   --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.55);
 
   --color-browser-chrome: #09090b;
+  --color-error: #f87171;
 
   color-scheme: dark;
 }
@@ -382,4 +388,72 @@ html[data-theme="dark"] [data-theme-toggle] .theme-icon-moon {
   [data-project-type].is-entering {
     animation: none;
   }
+}
+
+/* ============================================================
+   Contact form — labels, inputs, errors and the off-screen
+   honeypot. Inputs use a smaller radius than cards so the form
+   doesn't feel pillowy; focus rings keep the existing 2px / fg
+   token treatment for consistency with the rest of the site.
+   ============================================================ */
+.form-label {
+  @apply text-sm font-medium text-[var(--color-fg)];
+}
+
+.form-input {
+  @apply block w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] transition-colors duration-200 ease-[var(--ease-out-soft)] placeholder:text-[var(--color-fg-subtle)];
+}
+
+.form-input:hover {
+  border-color: var(--color-fg-subtle);
+}
+
+.form-input:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+
+.form-input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.form-input[aria-invalid="true"]:focus-visible {
+  outline-color: var(--color-error);
+}
+
+.form-error {
+  @apply min-h-[1rem] text-xs text-[var(--color-error)];
+}
+
+.form-error:empty {
+  display: none;
+}
+
+.form-status {
+  @apply mt-4 text-sm;
+}
+
+.form-status:empty {
+  display: none;
+}
+
+.form-status[data-state="error"] {
+  color: var(--color-error);
+}
+
+/* Honeypot — visually + practically off-screen, but kept in the
+   accessibility tree as `aria-hidden` so AT users skip it too. */
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Disabled submit button during the in-flight fetch — keeps the
+   layout stable while signalling the form is busy. */
+[data-contact-form][aria-busy="true"] [data-submit] {
+  @apply cursor-progress opacity-70;
 }

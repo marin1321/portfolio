@@ -1,12 +1,13 @@
 ---
 /**
- * Contact — final CTA with email + LinkedIn + GitHub + location.
- *
- * An optional contact form (Formspree) will be added in a later phase
- * (see RF-11 in the project plan).
+ * Contact — final CTA. Combines a Formspree-backed contact form
+ * (RF-11) with a compact alternate-contact card list. The form is
+ * the primary action; the cards stay below as escape hatches for
+ * users who prefer email / LinkedIn / GitHub directly.
  */
 import { getStrings, personal } from "@data/i18n";
 import Localized from "@components/ui/Localized.astro";
+import ContactForm from "@components/ui/ContactForm.astro";
 
 const en = getStrings("en").contact;
 const es = getStrings("es").contact;
@@ -64,39 +65,48 @@ const links = [
       />
     </header>
 
-    <dl
-      data-reveal
-      class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-    >
-      {
-        links.map((item) => (
-          <div class="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-5">
-            <Localized
-              as="dt"
-              class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
-              en={item.label.en}
-              es={item.label.es}
-            />
-            <dd class="mt-2 text-sm text-[var(--color-fg)]">
-              {item.href ? (
-                <a
-                  href={item.href}
-                  {...(item.external
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  class="break-all transition-colors hover:text-[var(--color-fg-soft)]"
-                >
-                  {item.value}
-                </a>
-              ) : item.valueEs ? (
-                <Localized en={item.value} es={item.valueEs} />
-              ) : (
-                item.value
-              )}
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
+    <div data-reveal class="mt-12">
+      <ContactForm />
+    </div>
+
+    <div data-reveal class="mt-12">
+      <Localized
+        as="h3"
+        class="section-eyebrow"
+        en={en.form.alternateHeading}
+        es={es.form.alternateHeading}
+      />
+      <dl class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          links.map((item) => (
+            <div class="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-5">
+              <Localized
+                as="dt"
+                class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+                en={item.label.en}
+                es={item.label.es}
+              />
+              <dd class="mt-2 text-sm text-[var(--color-fg)]">
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    {...(item.external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    class="break-all transition-colors hover:text-[var(--color-fg-soft)]"
+                  >
+                    {item.value}
+                  </a>
+                ) : item.valueEs ? (
+                  <Localized en={item.value} es={item.valueEs} />
+                ) : (
+                  item.value
+                )}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
   </div>
 </section>

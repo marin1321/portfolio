@@ -31,6 +31,7 @@ Personal portfolio website of **Oscar Marín** — Full Stack Engineer with 4+ y
 │   │   └── ui/               # ProjectCard, SkillTag, TimelineItem, LangToggle, Localized
 │   ├── data/
 │   │   ├── i18n.ts           # UI strings EN/ES + personal info + stack
+│   │   ├── site.ts           # Site config sourced from PUBLIC_* env vars
 │   │   ├── projects.ts       # Bilingual project data
 │   │   └── experience.ts     # Bilingual experience data
 │   ├── layouts/
@@ -54,12 +55,21 @@ Requires Node.js 20+ (22 recommended — see `.nvmrc`).
 
 ```bash
 npm install
+cp .env.example .env    # optional — only needed when wiring Formspree
 npm run dev             # http://localhost:4321
 npm run build           # static output in ./dist
 npm run preview         # serve the local build
 npm run check           # type-check with astro check
 npm run build:assets    # regenerate favicon / apple-touch / OG PNGs from SVG sources
 ```
+
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in what you need. Astro inlines `PUBLIC_*` values into the static client bundle at build time, so do **not** put secrets behind that prefix.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PUBLIC_FORMSPREE_ENDPOINT` | _unset_ | Formspree endpoint for the contact form (RF-11). When unset, the form gracefully falls back to a `mailto:` action so submits open the user's email client. Set this in the Vercel project's environment variables for production. Get yours from [formspree.io](https://formspree.io). |
 
 ## Public assets
 
@@ -125,13 +135,13 @@ Vercel auto-detects the Astro project:
 
 ## Roadmap
 
-Phases 1 and 2 are complete (setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders). Remaining work:
+Phases 1–4 are complete (setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders, SEO, dark mode, project filter, contact form). Remaining work:
 
-- **`feat/seo-and-meta`** — JSON-LD review, alternate locales, sitemap and robots polish
-- **`feat/lighthouse-audit`** — performance / SEO / a11y tuning, run on top of the above
+- **`feat/lighthouse-audit`** — performance / SEO / a11y tuning on the deployed site
 - **Real CV PDFs** — drop the two files into `public/` (see [Public assets](#public-assets))
 - **Final OG image** — replace `src/assets/og-source.svg` with a designed version and re-run `npm run build:assets`
 - **Custom domain** — connect `oscarmarin.dev` (or chosen domain) in Vercel
+- **Formspree endpoint** — create a form at [formspree.io](https://formspree.io) and set `PUBLIC_FORMSPREE_ENDPOINT` in Vercel env vars (the form falls back to `mailto:` until configured)
 
 ## Contact
 
