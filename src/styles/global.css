@@ -469,3 +469,120 @@ html[data-theme="dark"] [data-theme-toggle] .theme-icon-moon {
 [data-contact-form][aria-busy="true"] [data-submit] {
   @apply cursor-progress opacity-70;
 }
+
+/* ============================================================
+   Project detail modal (RF-10) — built on the native <dialog>
+   element. The browser handles focus trap, ESC, and top-layer
+   placement; the rules below add visual polish: rounded panel,
+   dimmed backdrop with blur, internal scroll, and a brief fade
+   on open. Honors `prefers-reduced-motion`.
+   ============================================================ */
+.project-dialog {
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: min(42rem, 92vw);
+  width: 100%;
+  max-height: 88vh;
+  color: inherit;
+}
+
+.project-dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
+  backdrop-filter: blur(4px);
+}
+
+html[data-theme="dark"] .project-dialog::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+
+.project-dialog__panel {
+  position: relative;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-hover);
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-dialog__body {
+  padding: 2rem 1.75rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 640px) {
+  .project-dialog__body {
+    padding: 2.5rem;
+  }
+}
+
+.project-dialog__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-fg-soft);
+  transition:
+    color var(--dur-base) var(--ease-out-soft),
+    background-color var(--dur-base) var(--ease-out-soft),
+    border-color var(--dur-base) var(--ease-out-soft);
+}
+
+.project-dialog__close:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-fg);
+}
+
+.project-dialog__close:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.project-dialog[open] {
+  animation: dialog-in var(--dur-base) var(--ease-out-soft);
+}
+
+.project-dialog[open]::backdrop {
+  animation: backdrop-in var(--dur-base) var(--ease-out-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-dialog[open],
+  .project-dialog[open]::backdrop {
+    animation: none;
+  }
+}

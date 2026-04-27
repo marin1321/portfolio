@@ -1,0 +1,264 @@
+---
+/**
+ * ProjectDialog — expanded view of a single project (RF-10).
+ *
+ * Implementation notes:
+ *  - Uses the native <dialog> element opened with .showModal(), so
+ *    the browser handles top-layer rendering, focus trapping, ESC
+ *    to close, and tab cycling for free.
+ *  - Both languages render in the DOM and the active one is shown
+ *    via the same `html[data-lang]` CSS gating used everywhere else,
+ *    so toggling EN/ES while the modal is open updates content
+ *    without re-rendering.
+ *  - Content extras (`details`, `outcomes`) are optional and only
+ *    render their sections when populated, so the modal degrades
+ *    gracefully for projects that haven't been authored yet.
+ */
+import type { Project } from "@data/projects";
+import { getStrings } from "@data/i18n";
+import Localized from "./Localized.astro";
+import SkillTag from "./SkillTag.astro";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+const en = getStrings("en");
+const es = getStrings("es");
+
+const dialogId = `project-dialog-${project.id}`;
+const titleId = `${dialogId}-title`;
+
+const badgeLabels = {
+  production: { en: en.work.badgeProduction, es: es.work.badgeProduction },
+  client: { en: en.work.badgeClient, es: es.work.badgeClient },
+};
+const badge = badgeLabels[project.type];
+
+/* Outcomes are stored as parallel EN/ES arrays — pair them index by
+ * index so each <li> carries both languages and stays in sync with
+ * the rest of the page when the user toggles. */
+const outcomesEn = project.content.en.outcomes ?? [];
+const outcomesEs = project.content.es.outcomes ?? [];
+const outcomesLength = Math.min(outcomesEn.length, outcomesEs.length);
+const outcomesIndices =
+  outcomesLength > 0 ? Array.from({ length: outcomesLength }, (_, i) => i) : [];
+
+const hasDetails = Boolean(
+  project.content.en.details && project.content.es.details,
+);
+---
+
+<dialog
+  data-project-dialog
+  id={dialogId}
+  aria-labelledby={titleId}
+  class="project-dialog"
+>
+  <div class="project-dialog__panel">
+    <button
+      type="button"
+      data-dialog-close
+      data-label-en={en.work.dialog.close}
+      data-label-es={es.work.dialog.close}
+      aria-label={en.work.dialog.close}
+      class="project-dialog__close"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-4 w-4"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <div class="project-dialog__body">
+      <header class="flex flex-wrap items-center gap-3">
+        <Localized
+          class="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-soft)]"
+          en={badge.en}
+          es={badge.es}
+        />
+        <span class="text-xs text-[var(--color-fg-muted)]"
+          >{project.company}</span
+        >
+      </header>
+
+      <Localized
+        as="h2"
+        id={titleId}
+        class="mt-4 text-2xl font-medium leading-snug tracking-tight text-[var(--color-fg)] sm:text-3xl"
+        en={project.content.en.title}
+        es={project.content.es.title}
+      />
+
+      <Localized
+        as="p"
+        class="mt-4 text-[15px] leading-relaxed text-[var(--color-fg-soft)] sm:text-base"
+        en={project.content.en.description}
+        es={project.content.es.description}
+      />
+
+      {
+        hasDetails && (
+          <Localized
+            as="p"
+            class="mt-4 text-[15px] leading-relaxed text-[var(--color-fg-soft)] sm:text-base"
+            en={project.content.en.details ?? ""}
+            es={project.content.es.details ?? ""}
+          />
+        )
+      }
+
+      <div
+        class="mt-6 rounded-lg border-l-2 border-[var(--color-fg)] bg-[var(--color-bg-soft)] py-3 pl-4 pr-3"
+      >
+        <Localized
+          as="p"
+          class="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+          en={en.work.highlightLabel}
+          es={es.work.highlightLabel}
+        />
+        <Localized
+          as="p"
+          class="mt-1.5 text-sm leading-relaxed text-[var(--color-fg-soft)]"
+          en={project.content.en.highlight}
+          es={project.content.es.highlight}
+        />
+      </div>
+
+      {
+        outcomesIndices.length > 0 && (
+          <section class="mt-8">
+            <Localized
+              as="h3"
+              class="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-fg-muted)]"
+              en={en.work.dialog.outcomes}
+              es={es.work.dialog.outcomes}
+            />
+            <ul class="mt-3 flex flex-col gap-2.5">
+              {outcomesIndices.map((i) => (
+                <li class="relative pl-5 text-sm leading-relaxed text-[var(--color-fg-soft)] before:absolute before:left-0 before:top-[0.55rem] before:h-1 before:w-1 before:rounded-full before:bg-[var(--color-fg-subtle)]">
+                  <span data-l="en">{outcomesEn[i]}</span>
+                  <span data-l="es">{outcomesEs[i]}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <section class="mt-8">
+        <Localized
+          as="h3"
+          class="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-fg-muted)]"
+          en={en.work.dialog.stack}
+          es={es.work.dialog.stack}
+        />
+        <div class="mt-3 flex flex-wrap gap-2">
+          {project.tags.map((tag) => <SkillTag label={tag} />)}
+        </div>
+      </section>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  /* Global wiring for every <ProjectDialog>. Astro bundles + dedupes
+   * this block, so it runs once per page even though the component
+   * renders multiple times. Native <dialog> handles focus trapping,
+   * ESC, and tab cycling for free; we add backdrop click, body scroll
+   * lock, and locale-aware close button labels. */
+
+  const init = () => {
+    const dialogs = document.querySelectorAll<HTMLDialogElement>(
+      "[data-project-dialog]",
+    );
+    const triggers = document.querySelectorAll<HTMLButtonElement>(
+      "[data-project-trigger]",
+    );
+
+    if (dialogs.length === 0) return;
+
+    /** Opens the dialog whose id matches the trigger's data attribute
+     *  and locks body scroll. The browser pulls the <dialog> into the
+     *  top layer and traps focus automatically. */
+    const openDialog = (dialog: HTMLDialogElement) => {
+      document.documentElement.style.overflow = "hidden";
+      dialog.showModal();
+    };
+
+    const closeDialog = (dialog: HTMLDialogElement) => {
+      dialog.close();
+    };
+
+    triggers.forEach((trigger) => {
+      const targetId = trigger.dataset.projectTrigger;
+      if (!targetId) return;
+      const dialog = document.getElementById(targetId);
+      if (!(dialog instanceof HTMLDialogElement)) return;
+      trigger.addEventListener("click", () => openDialog(dialog));
+    });
+
+    const syncCloseLabel = (
+      btn: HTMLButtonElement,
+      lang: "en" | "es",
+    ) => {
+      const label =
+        lang === "es" ? btn.dataset.labelEs : btn.dataset.labelEn;
+      if (label) btn.setAttribute("aria-label", label);
+    };
+
+    const currentLang = (): "en" | "es" =>
+      document.documentElement.dataset.lang === "es" ? "es" : "en";
+
+    dialogs.forEach((dialog) => {
+      /* Backdrop click — when the user clicks outside the panel the
+       * event target is the <dialog> itself (the inner panel
+       * stopPropagation isn't needed because clicks on the panel
+       * never bubble up *as* the dialog element). */
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) closeDialog(dialog);
+      });
+
+      /* Restore body scroll on every close path (×, ESC, backdrop). */
+      dialog.addEventListener("close", () => {
+        document.documentElement.style.overflow = "";
+      });
+
+      const closeBtn = dialog.querySelector<HTMLButtonElement>(
+        "[data-dialog-close]",
+      );
+      if (closeBtn) {
+        closeBtn.addEventListener("click", () => closeDialog(dialog));
+        syncCloseLabel(closeBtn, currentLang());
+      }
+    });
+
+    document.addEventListener("lang:change", () => {
+      const lang = currentLang();
+      dialogs.forEach((dialog) => {
+        const closeBtn = dialog.querySelector<HTMLButtonElement>(
+          "[data-dialog-close]",
+        );
+        if (closeBtn) syncCloseLabel(closeBtn, lang);
+      });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+</script>
