@@ -46,6 +46,11 @@ export interface AboutStrings {
   eyebrow: string;
   heading: string;
   bio: string;
+  /** Alt text for the portrait shown in the About section. Should
+   *  describe the photo, not duplicate the role / name (which screen
+   *  readers already pick up from the heading and the document
+   *  metadata). */
+  portraitAlt: string;
   stackHeading: string;
   educationHeading: string;
   educationCurrent: {
@@ -194,6 +199,8 @@ const en: UIStrings = {
     eyebrow: "About",
     heading: "End-to-end engineer with a backend-first mindset.",
     bio: "Full stack engineer focused on backend systems, cloud infrastructure, and real-world integrations. I work full-time at DailyBot — a global SaaS product — while pursuing my Systems Engineering degree at Universidad del Quindío. I enjoy building end-to-end: from the database to the UI to the bot message that lands in your Slack.",
+    portraitAlt:
+      "Portrait of Oscar Marín at his desk, in front of a laptop, with software engineering books in the background.",
     stackHeading: "Stack",
     educationHeading: "Education",
     educationCurrent: {
@@ -318,6 +325,8 @@ const es: UIStrings = {
     eyebrow: "Sobre mí",
     heading: "Ingeniero end-to-end con mentalidad backend-first.",
     bio: "Ingeniero full stack con enfoque en sistemas backend, infraestructura cloud e integraciones reales. Trabajo a tiempo completo en DailyBot — un producto SaaS global — mientras curso Ingeniería en Sistemas en la Universidad del Quindío. Disfruto construir de punta a punta: desde la base de datos hasta la interfaz y el mensaje del bot que llega a tu Slack.",
+    portraitAlt:
+      "Retrato de Oscar Marín en su escritorio, frente al portátil, con libros de ingeniería de software al fondo.",
     stackHeading: "Stack",
     educationHeading: "Educación",
     educationCurrent: {
