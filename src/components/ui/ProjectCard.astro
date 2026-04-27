@@ -4,12 +4,16 @@
  *
  * Renders both languages (EN/ES) and lets CSS hide the inactive one.
  * Avoids client-side re-renders when toggling the language.
+ *
+ * Each card mounts its own <ProjectDialog> sibling (RF-10) and exposes
+ * a "View details" button that opens it via the native <dialog> API.
  */
 
 import type { Project } from "@data/projects";
 import { getStrings } from "@data/i18n";
 import Localized from "./Localized.astro";
 import SkillTag from "./SkillTag.astro";
+import ProjectDialog from "./ProjectDialog.astro";
 
 interface Props {
   project: Project;
@@ -25,6 +29,8 @@ const badgeLabels = {
 };
 const highlightLabels = { en: en.highlightLabel, es: es.highlightLabel };
 const badge = badgeLabels[project.type];
+
+const dialogId = `project-dialog-${project.id}`;
 ---
 
 <article
@@ -80,7 +86,34 @@ const badge = badgeLabels[project.type];
     </div>
   </div>
 
-  <footer class="flex flex-wrap gap-2 pt-2">
-    {project.tags.map((tag) => <SkillTag label={tag} />)}
+  <footer class="flex flex-wrap items-center justify-between gap-3 pt-2">
+    <div class="flex flex-wrap gap-2">
+      {project.tags.map((tag) => <SkillTag label={tag} />)}
+    </div>
+    <button
+      type="button"
+      data-project-trigger={dialogId}
+      aria-haspopup="dialog"
+      aria-controls={dialogId}
+      class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1.5 text-xs font-medium text-[var(--color-fg-soft)] transition-colors duration-200 ease-[var(--ease-out-soft)] hover:border-[var(--color-fg-subtle)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-fg)]"
+    >
+      <Localized en={en.dialog.open} es={es.dialog.open} />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="icon-shift h-3.5 w-3.5"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M5 12h14M13 5l7 7-7 7"></path>
+      </svg>
+    </button>
   </footer>
 </article>
+
+<ProjectDialog project={project} />
