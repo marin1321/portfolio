@@ -76,6 +76,17 @@ export interface WorkStrings {
     client: string;
     countSuffix: string;
   };
+  /** Strings for the project detail modal (RF-10). */
+  dialog: {
+    /** Card-level button that opens the modal. */
+    open: string;
+    /** Accessible label for the close (×) button inside the modal. */
+    close: string;
+    /** Section heading for the bullet list of outcomes/decisions. */
+    outcomes: string;
+    /** Section heading for the tech stack list inside the modal. */
+    stack: string;
+  };
 }
 
 export interface ExperienceStrings {
@@ -212,6 +223,12 @@ const en: UIStrings = {
       client: "Client work",
       countSuffix: "shown",
     },
+    dialog: {
+      open: "View details",
+      close: "Close details",
+      outcomes: "Key outcomes",
+      stack: "Tech stack",
+    },
   },
   experience: {
     eyebrow: "Experience",
@@ -329,6 +346,12 @@ const es: UIStrings = {
       production: "Producción",
       client: "Cliente",
       countSuffix: "visibles",
+    },
+    dialog: {
+      open: "Ver detalles",
+      close: "Cerrar detalles",
+      outcomes: "Resultados clave",
+      stack: "Stack",
     },
   },
   experience: {
