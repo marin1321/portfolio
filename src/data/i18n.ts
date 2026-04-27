@@ -33,7 +33,10 @@ export interface HeroStat {
 }
 
 export interface HeroStrings {
-  availability: string;
+  /** Short hook displayed in the badge next to the pulsing green dot
+   *  at the very top of the hero. The dot reads as "live / active /
+   *  now"; the tagline should reinforce that beat in 3-5 words. */
+  tagline: string;
   headline: string;
   subtitle: string;
   ctaPrimary: string;
@@ -182,7 +185,7 @@ const en: UIStrings = {
     themeToggleToDark: "Switch to dark theme",
   },
   hero: {
-    availability: "Available for new opportunities",
+    tagline: "The future is now",
     headline: "Full Stack Engineer building systems that scale.",
     subtitle:
       "4+ years shipping production software — from conversational AI agents and multi-platform bots to Shopify integrations and cloud infrastructure on AWS. Currently at DailyBot.",
@@ -308,7 +311,7 @@ const es: UIStrings = {
     themeToggleToDark: "Cambiar a tema oscuro",
   },
   hero: {
-    availability: "Disponible para nuevas oportunidades",
+    tagline: "El futuro es hoy",
     headline: "Ingeniero Full Stack construyendo sistemas que escalan.",
     subtitle:
       "4+ años entregando software en producción — desde agentes de IA conversacionales y bots multi-plataforma hasta integraciones Shopify e infraestructura en AWS. Actualmente en DailyBot.",
