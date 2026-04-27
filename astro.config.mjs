@@ -46,7 +46,12 @@ export default defineConfig({
     }),
   },
   build: {
-    inlineStylesheets: "auto",
+    // Inline the CSS bundle into the HTML head to eliminate the
+    // render-blocking <link rel="stylesheet"> request. The bundle is
+    // ~35 KB raw / 7 KB gzip — small enough that the round-trip cost
+    // outweighs the second-visit cache benefit, and Lighthouse flags
+    // it as the only render-blocking resource on the page.
+    inlineStylesheets: "always",
   },
   compressHTML: true,
 });

@@ -13,16 +13,20 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "build:assets": "node scripts/build-assets.mjs"
+    "build:assets": "node scripts/build-assets.mjs",
+    "audit": "npm run build && node scripts/lighthouse.mjs"
   },
   "dependencies": {
-    "astro": "^6.1.9",
     "@astrojs/sitemap": "^3.7.2",
+    "@fontsource-variable/geist": "^5.2.8",
     "@tailwindcss/vite": "^4.2.4",
+    "astro": "^6.1.9",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^12.8.2",
     "typescript": "^5.9.3"
   },
   "overrides": {

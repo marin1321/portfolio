@@ -61,7 +61,10 @@ npm run build           # static output in ./dist
 npm run preview         # serve the local build
 npm run check           # type-check with astro check
 npm run build:assets    # regenerate favicon / apple-touch / OG PNGs from SVG sources
+npm run audit           # build + Lighthouse (mobile, simulated 4G); writes lighthouse-report.{html,json}
 ```
+
+Pass `-- --url=https://oscarmarin.dev` to `npm run audit` to point Lighthouse at the deployed site instead of the local preview. The two report files are gitignored.
 
 ### Environment variables
 
@@ -133,15 +136,29 @@ Vercel auto-detects the Astro project:
 4. Output directory: `dist` (default).
 5. Connect the custom domain (`oscarmarin.dev` planned).
 
+## Lighthouse
+
+The local production build scores **100 / 100 / 100 / 100** (Performance / Accessibility / Best Practices / SEO) on Lighthouse mobile with simulated 4G. Run `npm run audit` to reproduce — it builds the site, spins up `astro preview`, runs Lighthouse, and writes both an HTML and a JSON report.
+
+Performance baselines (mobile, simulated 4G, headless Chrome):
+
+| Metric | Target | Current |
+|---|---|---|
+| FCP | < 1.8 s | 0.9 s |
+| LCP | < 2.5 s | 1.2 s |
+| TBT | < 200 ms | 0 ms |
+| CLS | < 0.1 | 0 |
+| Total page weight | — | 56 KiB / 5 requests |
+
 ## Roadmap
 
-Phases 1–4 are complete (setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders, SEO, dark mode, project filter, contact form). Remaining work:
+Phases 1–5 are complete (setup, structure, content, i18n, layouts, sections, motion polish, branding placeholders, SEO, dark mode, project filter, contact form, Lighthouse 100/100). Remaining work:
 
-- **`feat/lighthouse-audit`** — performance / SEO / a11y tuning on the deployed site
 - **Real CV PDFs** — drop the two files into `public/` (see [Public assets](#public-assets))
 - **Final OG image** — replace `src/assets/og-source.svg` with a designed version and re-run `npm run build:assets`
 - **Custom domain** — connect `oscarmarin.dev` (or chosen domain) in Vercel
 - **Formspree endpoint** — create a form at [formspree.io](https://formspree.io) and set `PUBLIC_FORMSPREE_ENDPOINT` in Vercel env vars (the form falls back to `mailto:` until configured)
+- **(Optional)** RF-10 — project detail modal
 
 ## Contact
 

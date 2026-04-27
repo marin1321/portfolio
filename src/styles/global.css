@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Self-hosted Geist (variable). Eliminates the cross-origin Google
+   Fonts round-trip (preconnect + CSS + woff2) that previously kept
+   LCP around 2.4 s on 4G. Each Fontsource subset is gated by
+   `unicode-range`, so only `geist-latin-wght-normal.woff2` is
+   actually downloaded for our content. Geist Mono is declared as a
+   token below for future use but no element references it on this
+   page, so we skip its @font-face import to keep the bundle lean. */
+@import "@fontsource-variable/geist/wght.css";
+
 /* ============================================================
    Design tokens — minimalist palette (white / gray scale with a
    subtle accent). Typography uses two weights only: 400 and 500.
@@ -37,13 +46,16 @@
      bumps lightness so it stays legible on the deep background. */
   --color-error: #b91c1c;
 
-  /* Typography — Geist (two weights) */
+  /* Typography — self-hosted Geist (variable). The fallback chain
+     is ordered to minimize FOUT: a system sans that visually approximates
+     Geist's metrics (Inter / SF Pro / Segoe UI) renders during the swap
+     window, then the variable woff2 takes over. */
   --font-sans:
-    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono:
-    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+    "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Container */
   --container-2xl: 1200px;
