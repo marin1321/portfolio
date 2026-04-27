@@ -94,6 +94,33 @@ export interface ContactStrings {
   githubLabel: string;
   locationLabel: string;
   locationValue: string;
+  /** Copy for the Formspree-backed contact form (RF-11). When the
+   *  endpoint isn't configured the form still renders, but submits
+   *  fall through to a `mailto:` link instead. */
+  form: {
+    heading: string;
+    intro: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    /** Auto-filled subject line on outbound submissions. */
+    subject: string;
+    submit: string;
+    submitting: string;
+    successTitle: string;
+    successBody: string;
+    successReset: string;
+    errorRequired: string;
+    errorEmail: string;
+    errorGeneric: string;
+    errorOffline: string;
+    /** Heading for the alternate-contact card grid below the form. */
+    alternateHeading: string;
+    privacy: string;
+  };
 }
 
 export interface FooterStrings {
@@ -203,6 +230,33 @@ const en: UIStrings = {
     githubLabel: "GitHub",
     locationLabel: "Location",
     locationValue: "Colombia — Remote friendly",
+    form: {
+      heading: "Send a message",
+      intro:
+        "Tell me a bit about your project, role, or idea — I usually reply within 24 hours.",
+      nameLabel: "Name",
+      namePlaceholder: "Jane Doe",
+      emailLabel: "Email",
+      emailPlaceholder: "jane@company.com",
+      messageLabel: "Message",
+      messagePlaceholder: "What are you working on?",
+      subject: "New contact from oscarmarin.dev",
+      submit: "Send message",
+      submitting: "Sending…",
+      successTitle: "Message sent.",
+      successBody:
+        "Thanks for reaching out — I'll get back to you within 24 hours.",
+      successReset: "Send another message",
+      errorRequired: "This field is required.",
+      errorEmail: "Enter a valid email address.",
+      errorGeneric:
+        "Something went wrong sending the form. Please try again or email me directly.",
+      errorOffline:
+        "Looks like you're offline. Please try again once you're back online.",
+      alternateHeading: "Or reach me directly",
+      privacy:
+        "Your details only land in my inbox — no marketing, no third parties.",
+    },
   },
   footer: {
     builtWith: "Built with Astro & Tailwind CSS",
@@ -294,6 +348,33 @@ const es: UIStrings = {
     githubLabel: "GitHub",
     locationLabel: "Ubicación",
     locationValue: "Colombia — Remote friendly",
+    form: {
+      heading: "Envíame un mensaje",
+      intro:
+        "Cuéntame un poco sobre tu proyecto, vacante o idea — usualmente respondo en menos de 24 horas.",
+      nameLabel: "Nombre",
+      namePlaceholder: "Juana Pérez",
+      emailLabel: "Email",
+      emailPlaceholder: "juana@empresa.com",
+      messageLabel: "Mensaje",
+      messagePlaceholder: "¿En qué estás trabajando?",
+      subject: "Nuevo contacto desde oscarmarin.dev",
+      submit: "Enviar mensaje",
+      submitting: "Enviando…",
+      successTitle: "Mensaje enviado.",
+      successBody:
+        "Gracias por escribir — te respondo en menos de 24 horas.",
+      successReset: "Enviar otro mensaje",
+      errorRequired: "Este campo es obligatorio.",
+      errorEmail: "Ingresa un email válido.",
+      errorGeneric:
+        "Algo salió mal al enviar el formulario. Intenta de nuevo o escríbeme directamente.",
+      errorOffline:
+        "Parece que estás offline. Intenta de nuevo cuando vuelvas a tener conexión.",
+      alternateHeading: "O escríbeme directamente",
+      privacy:
+        "Tus datos solo llegan a mi bandeja de entrada — sin marketing, sin terceros.",
+    },
   },
   footer: {
     builtWith: "Construido con Astro y Tailwind CSS",
