@@ -1,14 +1,16 @@
-# CI — type check + production build on every PR and on main.
+# CI — type check, build, and a11y regression check on every PR and on main.
 #
 # Scope intentionally minimal:
-#   * `npm run check` — astro check + tsc (must pass).
-#   * `npm run build` — astro build (must produce a clean dist/).
+#   * build  — `npm run check` (astro check + tsc) + `npm run build`.
+#   * a11y   — `npm run audit:a11y` against the local production build,
+#              fails on any axe-core "serious" or "critical" violation.
 #
 # Lighthouse is *not* run here because GitHub-hosted runners have
 # highly variable CPU throttling and the performance score can swing
 # by 10+ points across runs, producing noisy pass/fail signals.
-# `npm run audit` is the reproducible path for Lighthouse — locally
-# or against the deployed origin via `-- --url=...`.
+# axe-core is rule-based (deterministic, not timing-sensitive), so it
+# *is* safe to gate on. `npm run audit` is the reproducible path for
+# Lighthouse — locally or against the deployed origin via `-- --url=...`.
 name: CI
 
 on:
@@ -17,7 +19,7 @@ on:
   pull_request:
     branches: [main]
 
-# Read-only token is enough for build + check; nothing in this
+# Read-only token is enough for build + check + a11y; nothing in this
 # workflow writes to the repo, releases, packages or deployments.
 permissions:
   contents: read
@@ -53,3 +55,31 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  a11y:
+    name: Accessibility (axe-core)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Independent of `build` so failures surface in parallel rather
+    # than being gated behind the type-check step. Both jobs install
+    # the same dep tree; the npm cache makes the second install fast.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # GitHub-hosted ubuntu-latest comes with Google Chrome
+      # preinstalled, which `chrome-launcher` finds automatically. The
+      # script passes `--no-sandbox` so the headless instance starts
+      # cleanly inside the runner's container.
+      - name: Run axe-core audit
+        run: npm run audit:a11y

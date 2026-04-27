@@ -39,7 +39,8 @@ Personal portfolio website of **Oscar Marín** — Full Stack Engineer with 4+ y
 │   ├── layouts/
 │   │   └── BaseLayout.astro  # Meta tags, Open Graph, fonts, scroll-reveal
 │   ├── pages/
-│   │   └── index.astro       # Single page — mounts every section
+│   │   ├── index.astro       # Single page — mounts every section
+│   │   └── 404.astro         # Bilingual not-found page
 │   └── styles/
 │       └── global.css        # Tailwind v4 + design tokens (@theme)
 ├── astro.config.mjs
@@ -64,9 +65,10 @@ npm run preview         # serve the local build
 npm run check           # type-check with astro check
 npm run build:assets    # regenerate favicon / apple-touch / OG PNGs from SVG sources
 npm run audit           # build + Lighthouse (mobile, simulated 4G); writes lighthouse-report.{html,json}
+npm run audit:a11y      # build + axe-core against home + 404; fails on any serious/critical violation
 ```
 
-Pass `-- --url=https://oscarmarin.dev` to `npm run audit` to point Lighthouse at the deployed site instead of the local preview. The two report files are gitignored.
+Pass `-- --url=https://oscarmarin.dev` to either audit command to point it at the deployed site instead of the local preview. The Lighthouse report files are gitignored.
 
 ### Environment variables
 
@@ -140,14 +142,16 @@ Vercel auto-detects the Astro project:
 
 ## Continuous integration
 
-GitHub Actions runs on every pull request against `main` and on every push to `main` (`.github/workflows/ci.yml`). Each run:
+GitHub Actions runs on every pull request against `main` and on every push to `main` (`.github/workflows/ci.yml`). Two jobs run in parallel:
 
-1. Checks out the repo and sets up Node from `.nvmrc` with npm cache.
-2. Runs `npm ci` for a deterministic install.
-3. Runs `npm run check` (astro check + tsc).
-4. Runs `npm run build` to produce `dist/`.
+| Job | What it runs |
+|---|---|
+| `build` | `npm ci` → `npm run check` (astro check + tsc) → `npm run build` |
+| `a11y` | `npm ci` → `npm run audit:a11y` (boots `astro preview`, audits `/` and `/404` with axe-core, fails on any *serious* or *critical* violation) |
 
-A failed run blocks merge. Lighthouse is intentionally not part of CI — GitHub-hosted runners have variable CPU throttling that swings the perf score by 10+ points across runs. `npm run audit` is the reproducible path locally or against the deployed origin (`-- --url=https://...`).
+Both jobs share the npm cache via `actions/setup-node@v4`. A failure in either blocks merge. Concurrency is scoped per branch so a fresh push supersedes any in-flight run.
+
+Lighthouse is intentionally **not** part of CI — GitHub-hosted runners have variable CPU throttling that swings the perf score by 10+ points across runs, so the pass/fail signal would be noisy. axe-core is rule-based and deterministic, so it's safe to gate on. `npm run audit` remains the reproducible path for Lighthouse, locally or against the deployed origin (`-- --url=https://...`).
 
 ## Lighthouse
 

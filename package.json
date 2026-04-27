@@ -14,7 +14,8 @@
     "astro": "astro",
     "check": "astro check",
     "build:assets": "node scripts/build-assets.mjs",
-    "audit": "npm run build && node scripts/lighthouse.mjs"
+    "audit": "npm run build && node scripts/lighthouse.mjs",
+    "audit:a11y": "npm run build && node scripts/a11y.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
@@ -25,8 +26,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/puppeteer": "^4.11.2",
     "chrome-launcher": "^1.2.1",
     "lighthouse": "^12.8.2",
+    "puppeteer-core": "^24.42.0",
     "typescript": "^5.9.3"
   },
   "overrides": {
