@@ -185,9 +185,9 @@ const en: UIStrings = {
     ctaSecondary: "Download CV",
     cvFile: "/cv-oscar-marin-en.pdf",
     stats: [
-      { number: "4+", label: "Years in production" },
+      { number: "4+", label: "Years in the industry" },
       { number: "3", label: "Tech companies" },
-      { number: "6", label: "Chat platforms integrated" },
+      { number: "1,200+", label: "Production commits" },
     ],
   },
   about: {
@@ -309,9 +309,9 @@ const es: UIStrings = {
     ctaSecondary: "Descargar CV",
     cvFile: "/cv-oscar-marin-es.pdf",
     stats: [
-      { number: "4+", label: "Años en producción" },
+      { number: "4+", label: "Años en la industria" },
       { number: "3", label: "Empresas tech" },
-      { number: "6", label: "Plataformas de chat integradas" },
+      { number: "1,200+", label: "Commits en producción" },
     ],
   },
   about: {
