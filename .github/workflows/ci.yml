@@ -1,0 +1,55 @@
+# CI — type check + production build on every PR and on main.
+#
+# Scope intentionally minimal:
+#   * `npm run check` — astro check + tsc (must pass).
+#   * `npm run build` — astro build (must produce a clean dist/).
+#
+# Lighthouse is *not* run here because GitHub-hosted runners have
+# highly variable CPU throttling and the performance score can swing
+# by 10+ points across runs, producing noisy pass/fail signals.
+# `npm run audit` is the reproducible path for Lighthouse — locally
+# or against the deployed origin via `-- --url=...`.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Read-only token is enough for build + check; nothing in this
+# workflow writes to the repo, releases, packages or deployments.
+permissions:
+  contents: read
+
+# A new push to a PR / branch supersedes any in-flight run, keeping
+# Actions minutes lean and the queue short.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Type check & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Single source of truth — same version used locally.
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build
+        run: npm run build

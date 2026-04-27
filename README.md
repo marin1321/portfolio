@@ -1,5 +1,7 @@
 # Oscar Marín — Portfolio
 
+[![CI](https://github.com/marin1321/portfolio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marin1321/portfolio/actions/workflows/ci.yml)
+
 Personal portfolio website of **Oscar Marín** — Full Stack Engineer with 4+ years shipping production software.
 
 > The full project plan lives in a private local document. This README documents only how to run and develop the codebase.
@@ -135,6 +137,17 @@ Vercel auto-detects the Astro project:
 3. Build command: `npm run build` (default).
 4. Output directory: `dist` (default).
 5. Connect the custom domain (`oscarmarin.dev` planned).
+
+## Continuous integration
+
+GitHub Actions runs on every pull request against `main` and on every push to `main` (`.github/workflows/ci.yml`). Each run:
+
+1. Checks out the repo and sets up Node from `.nvmrc` with npm cache.
+2. Runs `npm ci` for a deterministic install.
+3. Runs `npm run check` (astro check + tsc).
+4. Runs `npm run build` to produce `dist/`.
+
+A failed run blocks merge. Lighthouse is intentionally not part of CI — GitHub-hosted runners have variable CPU throttling that swings the perf score by 10+ points across runs. `npm run audit` is the reproducible path locally or against the deployed origin (`-- --url=https://...`).
 
 ## Lighthouse
 
