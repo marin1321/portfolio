@@ -74,6 +74,8 @@ export interface WorkStrings {
   description: string;
   badgeProduction: string;
   badgeClient: string;
+  /** Badge shown on cards whose project is published as open source. */
+  badgeOpenSource: string;
   highlightLabel: string;
   companyLabel: string;
   /** Labels for the project filter tabs and its accessible name. */
@@ -82,6 +84,8 @@ export interface WorkStrings {
     all: string;
     production: string;
     client: string;
+    /** Filter chip that narrows the grid to open-source projects. */
+    openSource: string;
     countSuffix: string;
   };
   /** Strings for the project detail modal (RF-10). */
@@ -94,6 +98,8 @@ export interface WorkStrings {
     outcomes: string;
     /** Section heading for the tech stack list inside the modal. */
     stack: string;
+    /** Section heading for the external resource links (npm / docs / repo). */
+    resources: string;
   };
 }
 
@@ -202,7 +208,7 @@ const en: UIStrings = {
     themeToggleToDark: "Switch to dark theme",
   },
   hero: {
-    tagline: "The future is now",
+    tagline: "Available for new opportunities",
     headline: "Full Stack Engineer building systems that scale.",
     subtitle:
       "4+ years shipping production software — from conversational AI agents and multi-platform bots to Shopify integrations and cloud infrastructure on AWS. Currently at DailyBot.",
@@ -241,6 +247,7 @@ const en: UIStrings = {
       "A few real systems I designed, shipped and operate today. Each one solved a concrete problem — not a demo.",
     badgeProduction: "Production",
     badgeClient: "Client work",
+    badgeOpenSource: "Open Source",
     highlightLabel: "Highlight",
     companyLabel: "Company",
     filters: {
@@ -248,6 +255,7 @@ const en: UIStrings = {
       all: "All",
       production: "Production",
       client: "Client work",
+      openSource: "Open Source",
       countSuffix: "shown",
     },
     dialog: {
@@ -255,6 +263,7 @@ const en: UIStrings = {
       close: "Close details",
       outcomes: "Key outcomes",
       stack: "Tech stack",
+      resources: "Resources",
     },
   },
   experience: {
@@ -338,7 +347,7 @@ const es: UIStrings = {
     themeToggleToDark: "Cambiar a tema oscuro",
   },
   hero: {
-    tagline: "El futuro es hoy",
+    tagline: "Disponible para nuevas oportunidades",
     headline: "Ingeniero Full Stack construyendo sistemas que escalan.",
     subtitle:
       "4+ años entregando software en producción — desde agentes de IA conversacionales y bots multi-plataforma hasta integraciones Shopify e infraestructura en AWS. Actualmente en DailyBot.",
@@ -377,6 +386,7 @@ const es: UIStrings = {
       "Algunos sistemas reales que diseñé, lancé y opero hoy. Cada uno resolvió un problema concreto — no un demo.",
     badgeProduction: "Producción",
     badgeClient: "Cliente",
+    badgeOpenSource: "Open Source",
     highlightLabel: "Highlight",
     companyLabel: "Empresa",
     filters: {
@@ -384,6 +394,7 @@ const es: UIStrings = {
       all: "Todos",
       production: "Producción",
       client: "Cliente",
+      openSource: "Open Source",
       countSuffix: "visibles",
     },
     dialog: {
@@ -391,6 +402,7 @@ const es: UIStrings = {
       close: "Cerrar detalles",
       outcomes: "Resultados clave",
       stack: "Stack",
+      resources: "Recursos",
     },
   },
   experience: {

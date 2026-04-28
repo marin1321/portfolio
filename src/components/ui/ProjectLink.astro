@@ -1,0 +1,126 @@
+---
+/**
+ * ProjectLink — pill-shaped chip that surfaces a public resource
+ * attached to a project (npm, docs, source repo, hosted demo).
+ *
+ * Each chip carries:
+ *   - A type-specific glyph rendered as a 14px icon.
+ *   - The visible resource name ("npm", "Docs", "GitHub"). This
+ *     visible text doubles as the accessible name — no aria-label
+ *     is set so screen readers and sighted users hear / see the
+ *     same string, which is the WCAG-preferred pattern (2.5.3).
+ *   - A tiny "external arrow" that nudges right on hover via the
+ *     existing .icon-shift utility — same micro-interaction the
+ *     primary CTAs use, so the link family reads as actionable.
+ *
+ * The component is purely presentational — wiring lives in
+ * ProjectCard / ProjectDialog. Both share this component so the
+ * card and the modal render the same chip set with zero drift.
+ */
+
+export type ProjectLinkType = "npm" | "docs" | "github" | "demo";
+
+interface Props {
+  type: ProjectLinkType;
+  href: string;
+  /** Visible label inside the chip (short — "npm" / "Docs" / "GitHub"). */
+  label: string;
+  class?: string;
+}
+
+const { type, href, label, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={["project-link", className]}
+>
+  {
+    type === "npm" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-3.5 w-3.5"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="m7.5 4.27 9 5.15M3 7l9 5 9-5M12 22V12M3 7v10l9 5 9-5V7" />
+      </svg>
+    )
+  }
+  {
+    type === "docs" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-3.5 w-3.5"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      </svg>
+    )
+  }
+  {
+    type === "github" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="h-3.5 w-3.5"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.302 3.438 9.8 8.205 11.387.6.111.82-.261.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+      </svg>
+    )
+  }
+  {
+    type === "demo" && (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-3.5 w-3.5"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      </svg>
+    )
+  }
+
+  <span>{label}</span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="icon-shift h-3 w-3 opacity-60"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M7 17 17 7M9 7h8v8" />
+  </svg>
+</a>
