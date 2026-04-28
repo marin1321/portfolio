@@ -18,6 +18,7 @@ import type { Project } from "@data/projects";
 import { getStrings } from "@data/i18n";
 import Localized from "./Localized.astro";
 import SkillTag from "./SkillTag.astro";
+import ProjectLink from "./ProjectLink.astro";
 
 interface Props {
   project: Project;
@@ -34,8 +35,34 @@ const titleId = `${dialogId}-title`;
 const badgeLabels = {
   production: { en: en.work.badgeProduction, es: es.work.badgeProduction },
   client: { en: en.work.badgeClient, es: es.work.badgeClient },
+  "open-source": {
+    en: en.work.badgeOpenSource,
+    es: es.work.badgeOpenSource,
+  },
 };
 const badge = badgeLabels[project.type];
+
+/* Mirror the ProjectCard's resource-link logic so the modal renders the
+ * same chip set (and in the same order) as the card. Keeping the order
+ * stable here prevents readers from getting different cues between the
+ * two surfaces. */
+const linkOrder = ["npm", "docs", "github", "demo"] as const;
+const linkVisibleLabels = {
+  npm: "npm",
+  docs: "Docs",
+  github: "GitHub",
+  demo: "Demo",
+} as const;
+const links = project.links;
+const linkEntries = links
+  ? linkOrder
+      .filter((key) => Boolean(links[key]))
+      .map((key) => ({
+        key,
+        href: links[key] as string,
+        label: linkVisibleLabels[key],
+      }))
+  : [];
 
 /* Outcomes are stored as parallel EN/ES arrays — pair them index by
  * index so each <li> carries both languages and stays in sync with
@@ -169,6 +196,28 @@ const hasDetails = Boolean(
           {project.tags.map((tag) => <SkillTag label={tag} />)}
         </div>
       </section>
+
+      {
+        linkEntries.length > 0 && (
+          <section class="mt-8">
+            <Localized
+              as="h3"
+              class="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-fg-muted)]"
+              en={en.work.dialog.resources}
+              es={es.work.dialog.resources}
+            />
+            <div class="mt-3 flex flex-wrap gap-2">
+              {linkEntries.map((entry) => (
+                <ProjectLink
+                  type={entry.key}
+                  href={entry.href}
+                  label={entry.label}
+                />
+              ))}
+            </div>
+          </section>
+        )
+      }
     </div>
   </div>
 </dialog>

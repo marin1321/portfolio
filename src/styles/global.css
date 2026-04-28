@@ -266,6 +266,17 @@ html[data-theme="dark"] {
     border-color: var(--color-fg);
     color: var(--color-bg);
   }
+
+  /* Project resource chips (npm / docs / GitHub / demo). Kept slightly
+     more solid than .filter-tab so they read as clickable affordances
+     even at rest, and pick up a soft lift + accent border on hover. */
+  .project-link {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1.5 text-xs font-medium text-[var(--color-fg-soft)] transition-[background-color,border-color,color,transform,box-shadow] duration-200 ease-[var(--ease-out-soft)] hover:-translate-y-px hover:border-[var(--color-fg-subtle)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-fg)];
+  }
+  .project-link:focus-visible {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 3px;
+  }
 }
 
 /* ============================================================

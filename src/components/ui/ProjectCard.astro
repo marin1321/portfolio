@@ -14,6 +14,7 @@ import { getStrings } from "@data/i18n";
 import Localized from "./Localized.astro";
 import SkillTag from "./SkillTag.astro";
 import ProjectDialog from "./ProjectDialog.astro";
+import ProjectLink from "./ProjectLink.astro";
 
 interface Props {
   project: Project;
@@ -26,11 +27,33 @@ const es = getStrings("es").work;
 const badgeLabels = {
   production: { en: en.badgeProduction, es: es.badgeProduction },
   client: { en: en.badgeClient, es: es.badgeClient },
+  "open-source": { en: en.badgeOpenSource, es: es.badgeOpenSource },
 };
 const highlightLabels = { en: en.highlightLabel, es: es.highlightLabel };
 const badge = badgeLabels[project.type];
 
 const dialogId = `project-dialog-${project.id}`;
+
+/* Resource chips render in a stable order regardless of the order keys
+ * happen to be authored in `projects.ts`. npm comes first because for
+ * an open-source library the install command is the primary CTA. */
+const linkOrder = ["npm", "docs", "github", "demo"] as const;
+const linkVisibleLabels = {
+  npm: "npm",
+  docs: "Docs",
+  github: "GitHub",
+  demo: "Demo",
+} as const;
+const links = project.links;
+const linkEntries = links
+  ? linkOrder
+      .filter((key) => Boolean(links[key]))
+      .map((key) => ({
+        key,
+        href: links[key] as string,
+        label: linkVisibleLabels[key],
+      }))
+  : [];
 ---
 
 <article
@@ -84,6 +107,20 @@ const dialogId = `project-dialog-${project.id}`;
         es={project.content.es.highlight}
       />
     </div>
+
+    {
+      linkEntries.length > 0 && (
+        <div class="flex flex-wrap items-center gap-2">
+          {linkEntries.map((entry) => (
+            <ProjectLink
+              type={entry.key}
+              href={entry.href}
+              label={entry.label}
+            />
+          ))}
+        </div>
+      )
+    }
   </div>
 
   <footer class="flex flex-wrap items-center justify-between gap-3 pt-2">
