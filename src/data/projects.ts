@@ -57,6 +57,60 @@ export interface Project {
 
 export const projects: readonly Project[] = [
   {
+    id: "mcp-devtools",
+    type: "open-source",
+    company: "npm",
+    tags: [
+      "TypeScript",
+      "Node.js",
+      "MCP",
+      "npm",
+      "Open Source",
+      "VitePress",
+    ],
+    links: {
+      npm: "https://www.npmjs.com/package/@oscarmarin/mcp-devtools",
+      docs: "https://mcp-devtools.oscarmarindev.com",
+      github: "https://github.com/marin1321/mcp-devtools",
+    },
+    content: {
+      en: {
+        title: "mcp-devtools — AI Developer Toolbox",
+        description:
+          "Published npm package that gives AI agents safe access to the local dev environment via MCP: filesystem, databases, processes, and OpenAPI specs. Used by Claude Desktop, Cursor, and any MCP-compatible agent.",
+        highlight:
+          "Designed from production MCP patterns at DailyBot: version-stamp cache invalidation, exponential backoff on reconnects, and an anti-hallucination layer that blocks stub results from reaching the user.",
+        details:
+          "mcp-devtools is the open-source distillation of the MCP integration patterns I built and operate at DailyBot. It exposes a curated, security-first surface so an AI agent can read files, run queries, spawn processes and call OpenAPI services without ever stepping outside the boundaries the developer authorises. Every tool runs through scope checks and a sandbox; the database tools default to read-only mode; the process tool consults an explicit allowlist before exec; and the HTTP transport requires Bearer auth so the same package powers local IDE use and remote / containerised deployments under one model.",
+        outcomes: [
+          "Published on npm as @oscarmarin/mcp-devtools — installable with npx @oscarmarin/mcp-devtools.",
+          "14 tools across 4 groups: filesystem, database, process, and OpenAPI — all scope-checked and sandboxed.",
+          "Security-first design: scope boundary enforcement, command allowlist, read-only DB mode, HTTP Bearer auth.",
+          "Two transports: stdio for local use, HTTP with auth for remote and containerised deployments.",
+          "Plugin API that lets users register custom tools without forking the package.",
+          "Full documentation site at mcp-devtools.oscarmarindev.com built with VitePress.",
+        ],
+      },
+      es: {
+        title: "mcp-devtools — Caja de herramientas para IA",
+        description:
+          "Paquete npm publicado que da a los agentes de IA acceso seguro al entorno de desarrollo local vía MCP: filesystem, bases de datos, procesos y specs OpenAPI. Compatible con Claude Desktop, Cursor y cualquier agente MCP.",
+        highlight:
+          "Diseñado desde patrones MCP en producción en DailyBot: invalidación de cache por version-stamp, exponential backoff en reconexiones y una capa anti-alucinación que bloquea resultados stub antes de llegar al usuario.",
+        details:
+          "mcp-devtools es la destilación open-source de los patrones de integración MCP que construí y opero en DailyBot. Expone una superficie curada y security-first para que un agente de IA pueda leer archivos, ejecutar queries, lanzar procesos y llamar servicios OpenAPI sin salirse jamás de los límites que el desarrollador autoriza. Cada herramienta pasa por scope checks y un sandbox; las herramientas de base de datos arrancan en modo solo lectura; la herramienta de procesos consulta una allowlist explícita antes de exec; y el transporte HTTP exige auth Bearer, así que el mismo paquete potencia el uso local en el IDE y los deploys remotos / en contenedores bajo un solo modelo.",
+        outcomes: [
+          "Publicado en npm como @oscarmarin/mcp-devtools — instalable con npx @oscarmarin/mcp-devtools.",
+          "14 herramientas en 4 grupos: filesystem, base de datos, proceso y OpenAPI — todas con scope check y sandbox.",
+          "Diseño security-first: restricción de scope, allowlist de comandos, modo DB de solo lectura, auth Bearer HTTP.",
+          "Dos transportes: stdio para uso local, HTTP con autenticación para deploys remotos y en contenedores.",
+          "Plugin API que permite registrar herramientas personalizadas sin forkear el paquete.",
+          "Sitio de documentación completo en mcp-devtools.oscarmarindev.com construido con VitePress.",
+        ],
+      },
+    },
+  },
+  {
     id: "conversational-ai-agent",
     type: "production",
     company: "DailyBot",
@@ -247,60 +301,6 @@ export const projects: readonly Project[] = [
           "Extendí tiendas con servicios Node.js sobre la API de Shopify donde las primitivas de la plataforma se quedaban cortas.",
           "Automaticé flujos de clientes con Make (Integromat) para que los eventos de orden fluyeran a contabilidad, inventario y fulfillment sin relevos manuales.",
           "Lideré el proyecto Media Maratón Quindío de punta a punta sobre Angular + Directus + Azure: modelo de datos, frontend, CMS headless y deploy.",
-        ],
-      },
-    },
-  },
-  {
-    id: "mcp-devtools",
-    type: "open-source",
-    company: "npm",
-    tags: [
-      "TypeScript",
-      "Node.js",
-      "MCP",
-      "npm",
-      "Open Source",
-      "VitePress",
-    ],
-    links: {
-      npm: "https://www.npmjs.com/package/@oscarmarin/mcp-devtools",
-      docs: "https://mcp-devtools.oscarmarindev.com",
-      github: "https://github.com/marin1321/mcp-devtools",
-    },
-    content: {
-      en: {
-        title: "mcp-devtools — AI Developer Toolbox",
-        description:
-          "Published npm package that gives AI agents safe access to the local dev environment via MCP: filesystem, databases, processes, and OpenAPI specs. Used by Claude Desktop, Cursor, and any MCP-compatible agent.",
-        highlight:
-          "Designed from production MCP patterns at DailyBot: version-stamp cache invalidation, exponential backoff on reconnects, and an anti-hallucination layer that blocks stub results from reaching the user.",
-        details:
-          "mcp-devtools is the open-source distillation of the MCP integration patterns I built and operate at DailyBot. It exposes a curated, security-first surface so an AI agent can read files, run queries, spawn processes and call OpenAPI services without ever stepping outside the boundaries the developer authorises. Every tool runs through scope checks and a sandbox; the database tools default to read-only mode; the process tool consults an explicit allowlist before exec; and the HTTP transport requires Bearer auth so the same package powers local IDE use and remote / containerised deployments under one model.",
-        outcomes: [
-          "Published on npm as @oscarmarin/mcp-devtools — installable with npx @oscarmarin/mcp-devtools.",
-          "14 tools across 4 groups: filesystem, database, process, and OpenAPI — all scope-checked and sandboxed.",
-          "Security-first design: scope boundary enforcement, command allowlist, read-only DB mode, HTTP Bearer auth.",
-          "Two transports: stdio for local use, HTTP with auth for remote and containerised deployments.",
-          "Plugin API that lets users register custom tools without forking the package.",
-          "Full documentation site at mcp-devtools.oscarmarindev.com built with VitePress.",
-        ],
-      },
-      es: {
-        title: "mcp-devtools — Caja de herramientas para IA",
-        description:
-          "Paquete npm publicado que da a los agentes de IA acceso seguro al entorno de desarrollo local vía MCP: filesystem, bases de datos, procesos y specs OpenAPI. Compatible con Claude Desktop, Cursor y cualquier agente MCP.",
-        highlight:
-          "Diseñado desde patrones MCP en producción en DailyBot: invalidación de cache por version-stamp, exponential backoff en reconexiones y una capa anti-alucinación que bloquea resultados stub antes de llegar al usuario.",
-        details:
-          "mcp-devtools es la destilación open-source de los patrones de integración MCP que construí y opero en DailyBot. Expone una superficie curada y security-first para que un agente de IA pueda leer archivos, ejecutar queries, lanzar procesos y llamar servicios OpenAPI sin salirse jamás de los límites que el desarrollador autoriza. Cada herramienta pasa por scope checks y un sandbox; las herramientas de base de datos arrancan en modo solo lectura; la herramienta de procesos consulta una allowlist explícita antes de exec; y el transporte HTTP exige auth Bearer, así que el mismo paquete potencia el uso local en el IDE y los deploys remotos / en contenedores bajo un solo modelo.",
-        outcomes: [
-          "Publicado en npm como @oscarmarin/mcp-devtools — instalable con npx @oscarmarin/mcp-devtools.",
-          "14 herramientas en 4 grupos: filesystem, base de datos, proceso y OpenAPI — todas con scope check y sandbox.",
-          "Diseño security-first: restricción de scope, allowlist de comandos, modo DB de solo lectura, auth Bearer HTTP.",
-          "Dos transportes: stdio para uso local, HTTP con autenticación para deploys remotos y en contenedores.",
-          "Plugin API que permite registrar herramientas personalizadas sin forkear el paquete.",
-          "Sitio de documentación completo en mcp-devtools.oscarmarindev.com construido con VitePress.",
         ],
       },
     },
