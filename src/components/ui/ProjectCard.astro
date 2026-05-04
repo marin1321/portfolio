@@ -29,20 +29,31 @@ const badgeLabels = {
   client: { en: en.badgeClient, es: es.badgeClient },
   "open-source": { en: en.badgeOpenSource, es: es.badgeOpenSource },
 };
+const extraBadgeLabels = {
+  "personal-project": {
+    en: en.extraBadges["personal-project"],
+    es: es.extraBadges["personal-project"],
+  },
+};
 const highlightLabels = { en: en.highlightLabel, es: es.highlightLabel };
 const badge = badgeLabels[project.type];
+const extraBadges = (project.extraBadges ?? []).map(
+  (key) => extraBadgeLabels[key],
+);
 
 const dialogId = `project-dialog-${project.id}`;
 
 /* Resource chips render in a stable order regardless of the order keys
- * happen to be authored in `projects.ts`. npm comes first because for
- * an open-source library the install command is the primary CTA. */
-const linkOrder = ["npm", "docs", "github", "demo"] as const;
+ * happen to be authored in `projects.ts`. The "demo" link comes first
+ * because for a hosted service the live URL is the most actionable
+ * CTA; npm follows because for a published package the install command
+ * plays the same role. Docs and source come after as supporting refs. */
+const linkOrder = ["demo", "npm", "docs", "github"] as const;
 const linkVisibleLabels = {
   npm: "npm",
   docs: "Docs",
   github: "GitHub",
-  demo: "Demo",
+  demo: "Live demo",
 } as const;
 const links = project.links;
 const linkEntries = links
@@ -62,13 +73,28 @@ const linkEntries = links
   data-hidden="false"
   class="group relative flex h-full flex-col gap-5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-bg)] p-7 shadow-[var(--shadow-card)] transition-[transform,border-color,box-shadow] duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-0.5 hover:border-[var(--color-fg-subtle)] hover:shadow-[var(--shadow-card-hover)]"
 >
-  <header class="flex flex-wrap items-center gap-3">
+  <header class="flex flex-wrap items-center gap-2">
     <Localized
       class="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-soft)]"
       en={badge.en}
       es={badge.es}
     />
-    <span class="text-xs text-[var(--color-fg-muted)]">{project.company}</span>
+    {
+      extraBadges.map((extra) => (
+        <Localized
+          class="inline-flex items-center rounded-full border border-dashed border-[var(--color-border)] bg-transparent px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+          en={extra.en}
+          es={extra.es}
+        />
+      ))
+    }
+    {
+      project.company && (
+        <span class="ml-1 text-xs text-[var(--color-fg-muted)]">
+          {project.company}
+        </span>
+      )
+    }
   </header>
 
   <span

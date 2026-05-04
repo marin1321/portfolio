@@ -76,6 +76,13 @@ export interface WorkStrings {
   badgeClient: string;
   /** Badge shown on cards whose project is published as open source. */
   badgeOpenSource: string;
+  /** Secondary badges that can stack alongside the primary type badge.
+   *  These are not project types — they don't drive the filter — they
+   *  carry extra metadata about the project's nature (e.g. a personal
+   *  side project independent of any employer). */
+  extraBadges: {
+    "personal-project": string;
+  };
   highlightLabel: string;
   companyLabel: string;
   /** Labels for the project filter tabs and its accessible name. */
@@ -248,6 +255,9 @@ const en: UIStrings = {
     badgeProduction: "Production",
     badgeClient: "Client work",
     badgeOpenSource: "Open Source",
+    extraBadges: {
+      "personal-project": "Personal project",
+    },
     highlightLabel: "Highlight",
     companyLabel: "Company",
     filters: {
@@ -387,6 +397,9 @@ const es: UIStrings = {
     badgeProduction: "Producción",
     badgeClient: "Cliente",
     badgeOpenSource: "Open Source",
+    extraBadges: {
+      "personal-project": "Proyecto personal",
+    },
     highlightLabel: "Highlight",
     companyLabel: "Empresa",
     filters: {
