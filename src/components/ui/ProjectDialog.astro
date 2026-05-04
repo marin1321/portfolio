@@ -40,18 +40,27 @@ const badgeLabels = {
     es: es.work.badgeOpenSource,
   },
 };
+const extraBadgeLabels = {
+  "personal-project": {
+    en: en.work.extraBadges["personal-project"],
+    es: es.work.extraBadges["personal-project"],
+  },
+};
 const badge = badgeLabels[project.type];
+const extraBadges = (project.extraBadges ?? []).map(
+  (key) => extraBadgeLabels[key],
+);
 
 /* Mirror the ProjectCard's resource-link logic so the modal renders the
- * same chip set (and in the same order) as the card. Keeping the order
- * stable here prevents readers from getting different cues between the
- * two surfaces. */
-const linkOrder = ["npm", "docs", "github", "demo"] as const;
+ * same chip set (and in the same order) as the card. The "demo" link
+ * comes first because for a hosted service the live URL is the most
+ * actionable CTA; npm follows for published packages. */
+const linkOrder = ["demo", "npm", "docs", "github"] as const;
 const linkVisibleLabels = {
   npm: "npm",
   docs: "Docs",
   github: "GitHub",
-  demo: "Demo",
+  demo: "Live demo",
 } as const;
 const links = project.links;
 const linkEntries = links
@@ -63,6 +72,11 @@ const linkEntries = links
         label: linkVisibleLabels[key],
       }))
   : [];
+
+/* Modal stack list — falls back to the card's `tags` when no override
+ * is provided. This lets a card stay visually balanced (~6–8 chips)
+ * while the modal can carry the full picture. */
+const stackTags = project.stack ?? project.tags;
 
 /* Outcomes are stored as parallel EN/ES arrays — pair them index by
  * index so each <li> carries both languages and stays in sync with
@@ -110,15 +124,28 @@ const hasDetails = Boolean(
     </button>
 
     <div class="project-dialog__body">
-      <header class="flex flex-wrap items-center gap-3">
+      <header class="flex flex-wrap items-center gap-2">
         <Localized
           class="inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-soft)]"
           en={badge.en}
           es={badge.es}
         />
-        <span class="text-xs text-[var(--color-fg-muted)]"
-          >{project.company}</span
-        >
+        {
+          extraBadges.map((extra) => (
+            <Localized
+              class="inline-flex items-center rounded-full border border-dashed border-[var(--color-border)] bg-transparent px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]"
+              en={extra.en}
+              es={extra.es}
+            />
+          ))
+        }
+        {
+          project.company && (
+            <span class="ml-1 text-xs text-[var(--color-fg-muted)]">
+              {project.company}
+            </span>
+          )
+        }
       </header>
 
       <Localized
@@ -193,7 +220,7 @@ const hasDetails = Boolean(
           es={es.work.dialog.stack}
         />
         <div class="mt-3 flex flex-wrap gap-2">
-          {project.tags.map((tag) => <SkillTag label={tag} />)}
+          {stackTags.map((tag) => <SkillTag label={tag} />)}
         </div>
       </section>
 

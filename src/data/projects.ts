@@ -14,6 +14,13 @@ import type { Lang } from "./i18n";
 
 export type ProjectType = "production" | "client" | "open-source";
 
+/** Keys for secondary badges that can stack alongside the primary
+ *  type badge on a card. These do NOT participate in the project
+ *  filter — they're purely descriptive metadata (e.g. an open-source
+ *  project that's also a personal side project). The labels live in
+ *  i18n.work.extraBadges for translation. */
+export type ExtraBadgeKey = "personal-project";
+
 export interface ProjectContent {
   title: string;
   description: string;
@@ -44,11 +51,22 @@ export interface Project {
   /** Stable identifier used for keys and anchors. */
   id: string;
   type: ProjectType;
-  /** Company where the project was built. For self-published projects
-   *  the field can hold the publishing namespace (e.g. "npm"). */
-  company: string;
-  /** Technology tags (same in EN/ES — not localized). */
+  /** Company where the project was built. For self-published OSS the
+   *  field can hold the publishing namespace (e.g. "npm"). Omit it for
+   *  pure personal projects with no employer / client / publisher. */
+  company?: string;
+  /** Optional secondary badges rendered next to the primary type badge
+   *  in card and modal headers. */
+  extraBadges?: readonly ExtraBadgeKey[];
+  /** Technology tags shown on the card (same in EN/ES — not localized).
+   *  Keep this list to ~6–8 entries so the card stays readable; use
+   *  `stack` below for the deeper modal list. */
   tags: readonly string[];
+  /** Optional override for the modal's "Tech stack" section. When
+   *  present the dialog renders this list instead of `tags`, letting
+   *  the card show a curated summary while the modal carries the full
+   *  picture. Falls back to `tags` when undefined. */
+  stack?: readonly string[];
   /** Optional external resources surfaced on the card. */
   links?: ProjectLinks;
   /** Textual content per language. */
@@ -56,6 +74,76 @@ export interface Project {
 }
 
 export const projects: readonly Project[] = [
+  {
+    id: "pragmara",
+    type: "open-source",
+    extraBadges: ["personal-project"],
+    tags: [
+      "Python",
+      "FastAPI",
+      "Next.js",
+      "Qdrant",
+      "Groq",
+      "Voyage AI",
+      "RAG",
+    ],
+    stack: [
+      "Python",
+      "FastAPI",
+      "SQLAlchemy",
+      "Celery",
+      "Next.js",
+      "TypeScript",
+      "Qdrant",
+      "Groq",
+      "Voyage AI",
+      "LangChain",
+      "Supabase",
+      "Upstash",
+      "Render",
+      "Vercel",
+    ],
+    links: {
+      demo: "https://pragmara.oscarmarindev.com",
+      github: "https://github.com/marin1321/pragmara",
+    },
+    content: {
+      en: {
+        title: "Pragmara — RAG-as-a-Service",
+        description:
+          "Upload technical documentation — PDFs, Markdown, or URLs — and get a streaming REST API that answers natural-language questions with precise source citations. Built end-to-end: hybrid vector search, cross-encoder reranking, SSE streaming, and a built-in evaluation framework that scores faithfulness and relevance on every query.",
+        highlight:
+          "Zero infrastructure cost: Groq (LLM), Voyage AI (embeddings), Qdrant Cloud, Supabase, Upstash, and Render — all on permanent free tiers. The only engineering constraint was building reliably within those limits.",
+        details:
+          "Pragmara is a multi-tenant RAG platform built for the real constraints of a solo project: zero infrastructure cost, observable failure modes, and a clean API contract. Documents go through a 6-stage ingestion pipeline — parse, clean, chunk, embed, index — then queries run hybrid dense+sparse retrieval with RRF fusion, cross-encoder reranking, and a faithfulness evaluation on every response. The entire stack runs on permanent free tiers: Groq for LLM inference, Voyage AI for embeddings, Qdrant Cloud for vectors, Supabase for PostgreSQL, and Upstash for Redis.",
+        outcomes: [
+          "6-stage ingestion pipeline: parse (PyMuPDF + BeautifulSoup), clean, chunk at 800 tokens with 80-token overlap, embed with Voyage AI, index into Qdrant with full source metadata.",
+          "Hybrid retrieval: dense vector search + BM25 sparse with Reciprocal Rank Fusion, then cross-encoder reranking on top-20 candidates down to top-5.",
+          "Streaming SSE responses with inline citations — source file, page number, and section — injected as structured JSON at stream end.",
+          "Evaluation framework on every query: faithfulness scored by an LLM judge (Groq llama-3.1-8b-instant), answer relevance by cosine similarity — both stored and surfaced in the analytics dashboard.",
+          "Multi-tenant isolation: all knowledge bases stored in one Qdrant collection, partitioned by kb_id payload filter — no collection-per-tenant overhead.",
+          "Magic link auth (Resend), API key management scoped per KB with SHA-256 hashing, rate limiting via Redis sliding window at 100 req/min.",
+        ],
+      },
+      es: {
+        title: "Pragmara — RAG-as-a-Service",
+        description:
+          "Sube documentación técnica — PDFs, Markdown o URLs — y obtén una API REST con streaming que responde preguntas en lenguaje natural con citas de fuente precisas. Construido de punta a punta: búsqueda vectorial híbrida, reranking con cross-encoder, streaming por SSE y un framework de evaluación que mide fidelidad y relevancia en cada query.",
+        highlight:
+          "Costo de infraestructura cero: Groq (LLM), Voyage AI (embeddings), Qdrant Cloud, Supabase, Upstash y Render — todos en free tiers permanentes. El único constraint de ingeniería fue construir de forma confiable dentro de esos límites.",
+        details:
+          "Pragmara es una plataforma RAG multi-tenant construida con los constraints reales de un proyecto personal: costo cero, modos de falla observables y un contrato de API limpio. Los documentos pasan por un pipeline de ingesta de 6 etapas — parse, clean, chunk, embed, index — y las queries ejecutan recuperación híbrida densa+sparse con fusión RRF, reranking con cross-encoder y evaluación de fidelidad en cada respuesta. Todo el stack corre en free tiers permanentes: Groq, Voyage AI, Qdrant Cloud, Supabase y Upstash.",
+        outcomes: [
+          "Pipeline de ingesta de 6 etapas: parse (PyMuPDF + BeautifulSoup), clean, chunk a 800 tokens con 80 de overlap, embed con Voyage AI, index en Qdrant con metadata de fuente completa.",
+          "Recuperación híbrida: búsqueda vectorial densa + BM25 sparse con Reciprocal Rank Fusion, seguido de reranking con cross-encoder de los 20 mejores a los 5 finales.",
+          "Respuestas en streaming por SSE con citas en línea — archivo fuente, número de página y sección — inyectadas como JSON estructurado al final del stream.",
+          "Framework de evaluación en cada query: fidelidad puntuada por un LLM juez (Groq llama-3.1-8b-instant), relevancia por similitud coseno — ambas almacenadas y visibles en el dashboard.",
+          "Aislamiento multi-tenant: todas las bases de conocimiento en una sola colección de Qdrant, particionadas por filtro de payload kb_id — sin overhead de una colección por tenant.",
+          "Auth por magic link (Resend), API keys con scope por KB y hash SHA-256, rate limiting por ventana deslizante en Redis a 100 req/min.",
+        ],
+      },
+    },
+  },
   {
     id: "mcp-devtools",
     type: "open-source",
